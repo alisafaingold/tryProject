@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+
+    <Properties>
+        <Property name="filename">logs/logger.log</Property>
+        <Property name="file-header">column1,column2,column3</Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{UNIX_MILLIS}|%-5level|%msg%n"/>
+        </Console>
+        <RollingFile name="File" fileName="${filename}" filePattern="${filename}-%d{yyyy.MM.dd_HH.mm.ss}-%i.log" >
+            <PatternLayout pattern="%d{UNIX_MILLIS}|%-5level|%msg%n"/>
+            <SizeBasedTriggeringPolicy size="1 MB"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Root>
+    </Loggers>
+</Configuration>
