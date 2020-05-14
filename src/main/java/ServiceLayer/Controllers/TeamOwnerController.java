@@ -146,9 +146,9 @@ public class TeamOwnerController {
     //UC 6.2
     public static boolean addUserAsTeamOwner(ManagementUser addingOwner, Team team, SignedUser newOwner) throws Exception {
         if (addingOwner instanceof Owner || (addingOwner instanceof TeamManager && ((TeamManager) addingOwner).hasPermission(TeamManagerPermissions.AddOwner))) {
-            HashSet<Owner> teamOwners = team.getTeamOwners();
-            if (teamOwners.stream().anyMatch(owner -> owner == newOwner))
-                throw new Exception("The user is already defined as team owner");
+//            HashSet<Owner> teamOwners = team.getTeamOwners();
+//            if (teamOwners.stream().anyMatch(owner -> owner == newOwner))
+//                throw new Exception("The user is already defined as team owner");
             if (newOwner instanceof Owner) {
                 team.addTeamMember(addingOwner, newOwner);
                 addingOwner.addOwner(team, (Owner) newOwner);
@@ -165,18 +165,18 @@ public class TeamOwnerController {
 
     //UC 6.3
     public static boolean removeTeamOwner(ManagementUser removingOwner, Team team, Owner ownerToRemove) throws Exception {
-        if (removingOwner instanceof Owner || (removingOwner instanceof TeamManager && ((TeamManager) removingOwner).hasPermission(TeamManagerPermissions.RemoveOwner))) {
-            HashSet<Owner> teamOwners = team.getTeamOwners();
-            if (teamOwners.stream().anyMatch(owner -> owner == ownerToRemove)) {
-                team.removeTeamMember(ownerToRemove);
-                removingOwner.removeOwner(team, ownerToRemove);
-                validateAndRemoveManagementUser(ownerToRemove);
-                //TODO send alerts to the removed
-            } else {
-                throw new Exception("The select user is not team Owner");
-            }
-        } else
-            throw new Exception("The user doesn't have permissions for this one");
+//        if (removingOwner instanceof Owner || (removingOwner instanceof TeamManager && ((TeamManager) removingOwner).hasPermission(TeamManagerPermissions.RemoveOwner))) {
+//            HashSet<Owner> teamOwners = team.getTeamOwners();
+//            if (teamOwners.stream().anyMatch(owner -> owner == ownerToRemove)) {
+//                team.removeTeamMember(ownerToRemove);
+//                removingOwner.removeOwner(team, ownerToRemove);
+//                validateAndRemoveManagementUser(ownerToRemove);
+//                //TODO send alerts to the removed
+//            } else {
+//                throw new Exception("The select user is not team Owner");
+//            }
+//        } else
+//            throw new Exception("The user doesn't have permissions for this one");
         return true;
     }
 
@@ -237,19 +237,19 @@ public class TeamOwnerController {
 
     //UC 6.5
     public static boolean removeTeamManager(ManagementUser removingOwner, Team team, TeamManager managerToRemove) throws Exception {
-        if (removingOwner instanceof Owner || (removingOwner instanceof TeamManager && ((TeamManager) removingOwner).hasPermission(TeamManagerPermissions.RemoveManager))) {
-            HashSet<TeamManager> teamManagers = team.getTeamManagers();
-            if (teamManagers.stream().anyMatch(teamManager -> teamManager == managerToRemove)) {
-                team.removeTeamMember(managerToRemove);
-                removingOwner.removeTeamManager(team, managerToRemove);
-                validateAndRemoveManagementUser(managerToRemove);
-                //TODO send alerts to the removed
-            } else {
-                throw new Exception("The select user is not team manager");
-            }
+//        if (removingOwner instanceof Owner || (removingOwner instanceof TeamManager && ((TeamManager) removingOwner).hasPermission(TeamManagerPermissions.RemoveManager))) {
+//            HashSet<TeamManager> teamManagers = team.getTeamManagers();
+//            if (teamManagers.stream().anyMatch(teamManager -> teamManager == managerToRemove)) {
+//                team.removeTeamMember(managerToRemove);
+//                removingOwner.removeTeamManager(team, managerToRemove);
+//                validateAndRemoveManagementUser(managerToRemove);
+//                //TODO send alerts to the removed
+//            } else {
+//                throw new Exception("The select user is not team manager");
+//            }
             return true;
-        } else
-            throw new Exception("The user doesn't have permissions for this one");
+//        } else
+//            throw new Exception("The user doesn't have permissions for this one");
     }
 
     //UC 6.6.1

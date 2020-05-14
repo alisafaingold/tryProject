@@ -101,9 +101,9 @@ public abstract class ManagementUser extends TeamUser {
     public boolean deleteUser() throws Exception {
         HashMap<Team, ManagementUser> teams = this.getTeams();
         for (Team team : teams.keySet()) {
-            if (team.getTeamOwners().size() == 1 && team.getTeamOwners().contains(this)) {
-                throw new Exception("Can't remove this user from the system since he is the only team owner of " + team.getTeamName());
-            }
+//            if (team.getTeamOwners().size() == 1 && team.getTeamOwners().contains(this)) {
+//                throw new Exception("Can't remove this user from the system since he is the only team owner of " + team.getTeamName());
+//            }
         }
         for (Team team : this.teams.keySet()) {
             team.removeTeamMember(this);

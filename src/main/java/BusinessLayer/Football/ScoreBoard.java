@@ -6,6 +6,7 @@ public class ScoreBoard {
     int numOfTeams;
     Season season;
     HashMap<Team, TeamScores> board;
+    String _id;
 
     public ScoreBoard(Season s) {
         this.season = s;
@@ -63,6 +64,14 @@ public class ScoreBoard {
         List<TeamScores> ans = new ArrayList<>(board.values());
         Collections.sort(ans, Comparator.comparing(TeamScores::getTotalPoints));
         return ans;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
     public static class TeamScores {
