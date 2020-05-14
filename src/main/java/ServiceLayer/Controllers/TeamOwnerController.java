@@ -256,7 +256,7 @@ public class TeamOwnerController {
             TeamManager teamManager = new TeamManager(username, hashPassword, firstName, lastName, email);
 
             addMemberToTeam(addingOwner, team, teamManager);
-            addingOwner.addTeamManager(team, teamManager);
+//            addingOwner.addTeamManager(team, teamManager);
 
             userDao.save(teamManager);
             addMemberToTeam(addingOwner, team, teamManager);
