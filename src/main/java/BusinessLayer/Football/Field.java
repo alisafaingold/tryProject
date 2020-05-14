@@ -13,12 +13,14 @@ public class Field implements Asset {
     private String location;
     private String name;
     private FieldType fieldType;
+    private String team;
 
-    public Field(int seats, String location, String name, FieldType fieldType) {
+    public Field(int seats, String location, String name, FieldType fieldType, String team) {
         this.seats = seats;
         this.location = location;
         this.name = name;
         this.fieldType = fieldType;
+        this.team = team;
     }
 
     @Override

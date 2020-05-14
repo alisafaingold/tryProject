@@ -101,4 +101,20 @@ public class FieldDao<T> implements Dao<Field> {
     private Field convertFieldDocument(Document dbField) {
         return gson.fromJson(dbField.toJson(settings), Field.class);
     }
+
+    public List<Field> getTeamFields(String team) {
+        try {
+            MongoCollection<Document> fields = mongoConnection.getFields();
+            BasicDBObject query = new BasicDBObject("team", team);
+            ArrayList<Document> dbFields = fields.find(query).into(new ArrayList<>());
+            ArrayList<Field> allFields = new ArrayList<>();
+            for (Document dbField : dbFields) {
+                allFields.add(convertFieldDocument(dbField));
+            }
+            return allFields;
+        } catch (Exception e) {
+            //TODO what we should return
+            return null;
+        }
+    }
 }

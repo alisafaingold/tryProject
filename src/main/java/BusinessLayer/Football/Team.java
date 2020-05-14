@@ -4,6 +4,7 @@ import BusinessLayer.Enum.TeamState;
 import BusinessLayer.SystemFeatures.PersonalPage;
 import BusinessLayer.SystemFeatures.TeamPersonalPage;
 import BusinessLayer.Users.*;
+import DB.FieldDao;
 import ServiceLayer.Controllers.PersonalPageSystem;
 import DB.SystemController;
 
@@ -16,7 +17,6 @@ public class Team {
     private String teamName;
     private TeamState state;
     private Members teamMembers;
-    private HashSet<Field> fields;
     private HashSet<FinanceActivity> financeActivities;
     private String _id;
 
@@ -27,7 +27,6 @@ public class Team {
         this.teamName = teamName;
         this.state = state;
         this.teamMembers = new Members();
-        this.fields = new HashSet<>();
         this.financeActivities = new HashSet<>();
         PersonalPageSystem.createNewPersonalPage(managementUser,this);
     }
@@ -68,29 +67,40 @@ public class Team {
     }
 
     public boolean addField(Field... fields) throws Exception {
+        //TODO fields
         List<Field> addedFields = new ArrayList<>();
+        FieldDao fieldDao = new FieldDao();
+        List teamFields = fieldDao.getTeamFields(this._id);
         for (Field field : fields) {
-            if (this.fields.contains(field)) {
-                this.fields.removeAll(addedFields);
+            if (teamFields.contains(field)) {
+                teamFields.removeAll(addedFields);
                 throw new Exception("The following field is already related to the team" + field);
             } else {
-                addedFields.add(field);
-                this.fields.add(field);
+                teamFields.add(field);
+                teamFields.add(field);
             }
+        }
+        for (Object teamField : teamFields) {
+            fieldDao.update((Field) teamField);
         }
         return true;
     }
 
     public boolean removeField(Field... fields) throws Exception {
         List<Field> removedAssets = new ArrayList<>();
+        FieldDao fieldDao = new FieldDao();
+        List teamFields = fieldDao.getTeamFields(this._id);
         for (Field field : fields) {
-            if (this.fields.contains(field)) {
+            if (teamFields.contains(field)) {
                 removedAssets.add(field);
-                this.fields.remove(field);
+                teamFields.remove(field);
             } else {
-                this.fields.addAll(removedAssets);
+                teamFields.addAll(removedAssets);
                 throw new Exception("The following field is not related to the team" + field);
             }
+        }
+        for (Object teamField : teamFields) {
+            fieldDao.update((Field) teamField);
         }
         return true;
     }
@@ -116,6 +126,10 @@ public class Team {
         return true;
     }
     public HashSet<Field> getFields() {
+        //TODO FIELD DAO
+        HashSet<Field> fields = new HashSet<>();
+        FieldDao fieldDao = new FieldDao();
+        fields.addAll(fieldDao.getTeamFields(this._id));
         return fields;
     }
 

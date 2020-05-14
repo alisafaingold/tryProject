@@ -5,6 +5,8 @@ import BusinessLayer.SystemFeatures.EventLog;
 import BusinessLayer.Users.Fan;
 import BusinessLayer.Users.Referee;
 import BusinessLayer.Enum.FieldType;
+import DB.SeasonDao;
+import DB.TeamDao;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +14,10 @@ import java.util.List;
 
 public class Game {
 
-    private Season season;
-    private Field field;
-    private Team homeTeam;
-    private Team awayTeam;
+    private String season;
+    private String field;
+    private String homeTeam;
+    private String awayTeam;
     private long gameDate;
     private EventLog eventLog;
     private String mainRefereeID;
@@ -32,13 +34,13 @@ public class Game {
 //    }
 
     public Game(Season season, Team homeTeam, Team awayTeam) {
-        this.season = season;
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
+        this.season = season.get_id();
+        this.homeTeam = homeTeam.get_id();
+        this.awayTeam = awayTeam.get_id();
         this.eventLog = new EventLog(this);
         for (Field f :homeTeam.getFields() ) {
             if(f.getFieldType() == FieldType.Tournament){
-                this.field=f;
+                this.field=f.get_id();
                 break;
                 //ToDo what if team have no tournament fields?
             }
@@ -46,19 +48,21 @@ public class Game {
     }
 
     public Season getSeason() {
-        return season;
-    }
-
-    public Field getField() {
-        return field;
+        //TODO ??
+        SeasonDao dao = new SeasonDao();
+        return (Season) dao.get(season).get();
     }
 
     public Team getHomeTeam() {
-        return homeTeam;
+        //TODO ??
+        TeamDao dao = new TeamDao();
+        return (Team) dao.get(homeTeam).get();
     }
 
     public Team getAwayTeam() {
-        return awayTeam;
+        //TODO ??
+        TeamDao dao = new TeamDao();
+        return (Team) dao.get(awayTeam).get();
     }
 
     public RefereeRole findRefereeRole(String rID){
@@ -99,9 +103,6 @@ public class Game {
         notifyAllObservers();
     }
 
-    public void setField(Field field) {
-        this.field = field;
-    }
 
     public void setGameDate(long gameDate) {
         this.gameDate = gameDate;
@@ -175,15 +176,15 @@ public class Game {
         return fansObserverID;
     }
 
-    public void setHomeTeam(Team homeTeam) {
+    public void setHomeTeam(String homeTeam) {
         this.homeTeam = homeTeam;
     }
 
-    public void setSeason(Season season) {
+    public void setSeason(String season) {
         this.season = season;
     }
 
-    public void setAwayTeam(Team awayTeam) {
+    public void setAwayTeam(String awayTeam) {
         this.awayTeam = awayTeam;
     }
 
