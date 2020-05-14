@@ -65,7 +65,7 @@ public class FootballAssociationSystem {
         String s = "Fan";
         String x = jjs.toJson(season);
         CURDOperations curdOperations = new CURDOperations();
-        curdOperations.save(season);
+//        curdOperations.save(season);
     }
 }
 

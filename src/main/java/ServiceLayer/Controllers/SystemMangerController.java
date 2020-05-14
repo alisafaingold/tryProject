@@ -9,7 +9,7 @@ import BusinessLayer.Enum.TeamState;
 import BusinessLayer.Football.Team;
 import BusinessLayer.SystemFeatures.Complaint;
 import CrossCutting.Utils;
-import DB.SystemController;
+import DB.*;
 
 
 import org.apache.commons.validator.routines.EmailValidator;
@@ -20,19 +20,30 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SystemMangerController {
+    UserDao userDao;
+    TeamDao teamDao;
+    ComplaintDao complaintDao;
+
+    public SystemMangerController() {
+        userDao = new UserDao();
+        teamDao = new TeamDao();
+        complaintDao = new ComplaintDao();
+    }
 
     //Wasn't in UC
-    public Owner signUpNewOwner(ManagementUser teamOwner, String firstName, String lastName, String email) throws Exception {
+    public Owner signUpNewOwner(String userId, ManagementUser teamOwner, String firstName, String lastName, String email) throws Exception {
         boolean valid = EmailValidator.getInstance().isValid(email);
         if (!valid)
             throw new Exception("Not valid Email");
 
         String password = lastName + "_" + firstName + "_123";
 
-        if (SystemController.userNameUser.containsKey(email))
+        SignedUser byEmail = userDao.getByEmail(email);
+        if (byEmail != null)
             throw new Exception("This user name already exist in the system");
 
         //TODO Send Email
@@ -40,21 +51,17 @@ public class SystemMangerController {
         String hashPassword = Utils.sha256(password);
 
         Owner owner = new Owner(email, hashPassword, firstName, lastName, email);
-        SystemController.userNameUser.put(email, owner);
+        userDao.save(owner);
+//                SystemController.userNameUser.put(email, owner);
         return owner;
     }
 
     //UC 8.1
-    public static boolean permanentlyCloseTeam(Team team) throws Exception {
+    public boolean permanentlyCloseTeam(Team team) throws Exception {
         if (team.getState() == TeamState.active || team.getState() == TeamState.notActive) {
             //Todo send alerts
-            boolean remove = SystemController.systemTeams.remove(team);
-            if (remove) {
-                SystemController.archivedTeams.add(team);
-            } else {
-                throw new Exception("Couldn't close this team");
-            }
             team.setStatus(TeamState.permanentlyClosed);
+            teamDao.delete(team);
         } else {
             throw new Exception("This team is already permanently closed");
         }
@@ -62,26 +69,29 @@ public class SystemMangerController {
     }
 
     //UC 8.2
-    public boolean removeUserFromSystem(SignedUser signedUser) throws Exception {
-        //todo send alerts
-        signedUser.deleteUser();
-        return true;
-    }
+    //maybe shouldn't do this UC
+//    public boolean removeUserFromSystem(SignedUser signedUser) throws Exception {
+//        //todo send alerts
+//        signedUser.deleteUser();
+//        return true;
+//    }
 
     //UC 8.3.1
     public List<Complaint> getAllComplaints() {
-        return new ArrayList<>(ComplaintSystemController.newComplaint);
+        return new ArrayList<>(complaintDao.getAll());
     }
 
     //UC 8.3.2
     public boolean addCommentToComplaint(SystemManager systemManager, Complaint complaint, String comment) throws Exception {
-        return complaint.addComment(systemManager, comment);
+        boolean b = complaint.addComment(systemManager, comment);
+        complaintDao.update(complaint);
+        return b;
         //TODO send notification to the fan
     }
 
     public boolean closeComplaint(SystemManager systemManager, Complaint complaint) {
         complaint.setStatus(ComplaintStatus.Closed);
-        ComplaintSystemController.moveToClose(complaint);
+        complaintDao.delete(complaint);
         return true;
     }
 

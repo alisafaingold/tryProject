@@ -132,4 +132,23 @@ public class TeamDao<T> implements Dao<Team> {
         }
     }
 
+    public Optional<Team> getByTeamName(String teamName) {
+        try {
+            MongoCollection<Document> teams = mongoConnection.getTeams();
+            BasicDBObject query = new BasicDBObject("teamName", teamName);
+            ArrayList<Document> dbTeams = teams.find(query).into(new ArrayList<>());
+            if (dbTeams.isEmpty())
+                return Optional.empty();
+            else {
+                Team team = convertTeamDocument(dbTeams.get(0));
+                return Optional.ofNullable(team);
+            }
+        }
+        catch(Exception e){
+            //TODO what we should return
+            return Optional.empty();
+        }
+    }
+
+
 }
