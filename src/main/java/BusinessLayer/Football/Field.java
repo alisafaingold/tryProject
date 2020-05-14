@@ -13,15 +13,12 @@ public class Field implements Asset {
     private String location;
     private String name;
     private FieldType fieldType;
-    private HashSet<Game> games;
-
 
     public Field(int seats, String location, String name, FieldType fieldType) {
         this.seats = seats;
         this.location = location;
         this.name = name;
         this.fieldType = fieldType;
-        this.games = new HashSet<>();
     }
 
     @Override
@@ -68,7 +65,7 @@ public class Field implements Asset {
     }
 
     public HashSet<Game> getGames() {
-        return games;
+        return null;
     }
 
     public String get_id() {
@@ -79,11 +76,4 @@ public class Field implements Asset {
         this._id = _id;
     }
 
-    public boolean addGame(Game g) {
-        return this.games.add(g);
-    }
-
-    public boolean removeGame(Game g) {
-        return this.games.remove(g);
-    }
 }

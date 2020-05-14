@@ -9,9 +9,8 @@ import java.util.HashSet;
 import java.util.Map;
 
 public abstract class ManagementUser extends TeamUser {
-    protected HashMap<Team, HashSet<Owner>> assignedOwners;
-    protected HashMap<Team, HashSet<TeamManager>> assignedTeamManagers;
-    protected SignedUser additionalRole;
+    protected String additionalRole;
+
 
     public ManagementUser(String username, String password, String firstName, String lastName, String email) {
         super(username, password, firstName, lastName, email);
