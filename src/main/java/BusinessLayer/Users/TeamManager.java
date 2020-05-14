@@ -18,12 +18,12 @@ public class TeamManager extends ManagementUser implements Asset {
         }
     }
 
-    public TeamManager(SignedUser signedUser) throws Exception {
-        this(signedUser.getUserName(),signedUser.getPassword(),signedUser.getFirstName(),signedUser.getLastName(),signedUser.getEmail());
-        if (!(signedUser instanceof Footballer || signedUser instanceof Coach || signedUser instanceof TeamManager))
-            throw new Exception("Only the following combinations are allowed: teamOwner and (Footballer or Coach or TeamManager)");
-        this.additionalRole = signedUser;
-    }
+//    public TeamManager(SignedUser signedUser) throws Exception {
+//        this(signedUser.getUserName(),signedUser.getPassword(),signedUser.getFirstName(),signedUser.getLastName(),signedUser.getEmail());
+//        if (!(signedUser instanceof Footballer || signedUser instanceof Coach || signedUser instanceof TeamManager))
+//            throw new Exception("Only the following combinations are allowed: teamOwner and (Footballer or Coach or TeamManager)");
+//        this.additionalRole = signedUser;
+//    }
 
 
     public boolean addPermissions(TeamManagerPermissions ... teamManagerPermissions){
