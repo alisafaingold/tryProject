@@ -6,13 +6,14 @@ import BusinessLayer.Football.Game;
 import BusinessLayer.SystemFeatures.Complaint;
 import BusinessLayer.SystemFeatures.PersonalPage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class Fan extends SignedUser {
     private long signedUpDate;
     private HashMap<Long, String> mySearches;
-
 //    private HashSet<PersonalPage> followedPersonalPages;
 //    private HashSet<Complaint> myComplaints;
 //    private HashSet<Game> observedGames;
@@ -22,6 +23,7 @@ public class Fan extends SignedUser {
         super(username, password, firstName, lastName, email);
         signedUpDate = System.currentTimeMillis();
         mySearches = new HashMap<>();
+
     }
 
     //========== Get Notify ================

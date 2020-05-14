@@ -1,7 +1,5 @@
 package DB;
 
-import BusinessLayer.Football.Season;
-import BusinessLayer.Football.Team;
 import BusinessLayer.SystemFeatures.PersonalPage;
 import BusinessLayer.Users.Fan;
 import com.google.gson.Gson;
@@ -14,6 +12,7 @@ import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,4 +116,23 @@ public class PersonalPageDao<T> implements Dao<PersonalPage> {
 
     }
 
+    public HashSet<PersonalPage> search(String[] searchArray) throws ClassNotFoundException {
+        MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
+        HashSet<PersonalPage> allPersonalPage = new HashSet<>();
+        BasicDBList or = new BasicDBList();
+        for (String s : searchArray) {
+            or.add(new BasicDBObject("json.pageName", s));
+            or.add(new BasicDBObject("json.team", s));
+            or.add(new BasicDBObject("json.teamFootballerMembers", s));
+            or.add(new BasicDBObject("json.coachName", s));
+            or.add(new BasicDBObject("json.teamFields", s));
+            BasicDBObject query = new BasicDBObject("$or", or);
+            List<Document> into = personalPages.find(query).into(new ArrayList<>());
+            for (Document document : into) {
+                allPersonalPage.add(convertPersonalPageDocument(document));
+            }
+
+        }
+        return allPersonalPage;
+    }
 }

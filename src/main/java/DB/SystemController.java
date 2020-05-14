@@ -25,22 +25,6 @@ public class SystemController {
     public static final Logger logger = LogManager.getLogger(SystemController.class.getName());
 
 
-    //Use Case 3.5
-    public static Map<String, Long> getSearchHistory(Fan fan, final long fromDate, final long toDate) {
-        HashMap<Long, String> historyDateHashMap = fan.getMySearches();
-        if(!historyDateHashMap.isEmpty()) {
-            Map<String, Long> collect =
-                    historyDateHashMap.entrySet().stream().filter(s -> s.getKey()<toDate && s.getKey()>fromDate).collect(Collectors.toMap(stringDateEntry -> stringDateEntry.getValue(), stringDateEntry -> stringDateEntry.getKey()));
-            return collect;
-        }
-        return null;
-    }
-
-    public static void removeUserFromActiveList(String userName) {
-        userNameUser.remove(userName);
-    }
-
-
     //Use Case 2.5
         public static HashMap<String, HashSet<Object>> search(User user, String searchInput){
         if(user instanceof Fan){

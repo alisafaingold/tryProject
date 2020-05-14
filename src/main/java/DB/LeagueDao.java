@@ -11,10 +11,7 @@ import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
@@ -112,7 +109,12 @@ public class LeagueDao<T> implements Dao<League> {
 
     }
 
+
+
     private League convertLeagueDocument(Document dbLeague) {
         return gson.fromJson(dbLeague.toJson(settings), League.class);
     }
+
+
+
 }

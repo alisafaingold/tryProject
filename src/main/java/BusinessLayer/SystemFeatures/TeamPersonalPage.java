@@ -7,6 +7,8 @@ import BusinessLayer.Football.Field;
 import BusinessLayer.Football.Team;
 import DB.SystemController;
 
+import java.util.HashSet;
+
 
 public class TeamPersonalPage extends PersonalPage {
     String coachName="";
@@ -17,13 +19,6 @@ public class TeamPersonalPage extends PersonalPage {
 
     public TeamPersonalPage(SignedUser user, Team team) {
         super(user);
-//        for (Coach teamCoach : team.getTeamCoaches()) {
-//            coachName += teamCoach.getCoachPosition() + ": "+ teamCoach.getFirstName() +" " + teamCoach.getLastName()+"\n";
-//        }
-//
-//        for (Footballer teamFootballer : team.getTeamFootballers()) {
-//            teamFootballerMembers += teamFootballer.getFootballerPosition() +": " + teamFootballer.getFirstName()  +" " + teamFootballer.getLastName()+"\n";
-//        }
 
         for (Field field : team.getFields()) {
             teamFields = "Filed Name: "+ field.getName() +", Field Location: "+ field.getLocation() +", Field Type: "+field.getFieldType()+
@@ -33,6 +28,18 @@ public class TeamPersonalPage extends PersonalPage {
         //Logger
         SystemController.logger.info("Creation | New Personal Page for Team have been created have been defined; Owner NAME: " + user.getFirstName()+" "+user.getLastName() +
                 "; Personal Page ID: " + this.get_id() + "; Team ID:" + team.get_id());
+    }
+
+    public void setTeamCoach(HashSet<Coach> coaches){
+        for (Coach teamCoach : coaches) {
+            coachName += teamCoach.getCoachPosition() + ": "+ teamCoach.getFirstName() +" " + teamCoach.getLastName()+"\n";
+        }
+    }
+
+    public void setTeamFootballers(HashSet<Footballer> footballers){
+        for (Footballer teamFootballer : footballers) {
+            teamFootballerMembers += teamFootballer.getFootballerPosition() +": " + teamFootballer.getFirstName()  +" " + teamFootballer.getLastName()+"\n";
+        }
     }
 
     @Override

@@ -23,7 +23,7 @@ public class Team {
 
     PersonalPage teamPersonalPage;
 
-    public Team(String teamName, TeamState state, ManagementUser managementUser) {
+    public Team(String teamName, TeamState state, ManagementUser managementUser) throws ClassNotFoundException {
         this.teamName = teamName;
         this.state = state;
         this.teamMembers = new Members();
@@ -139,6 +139,10 @@ public class Team {
     public boolean setStatus(TeamState newState) {
         this.state = newState;
         return true;
+    }
+
+    public Members getTeamMembers() {
+        return teamMembers;
     }
 
     public String get_id() {
