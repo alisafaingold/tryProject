@@ -95,21 +95,21 @@ public class Team {
         return true;
     }
 
-    public HashSet<Footballer> getTeamFootballers() {
-        return this.teamMembers.getFootballers();
-    }
-
-    public HashSet<Coach> getTeamCoaches() {
-        return this.teamMembers.getCoaches();
-    }
-
-    public HashSet<Owner> getTeamOwners() {
-        return this.teamMembers.getOwners();
-    }
-
-    public HashSet<TeamManager> getTeamManagers() {
-        return this.teamMembers.getTeamManagers();
-    }
+//    public HashSet<Footballer> getTeamFootballers() {
+//        return this.teamMembers.getFootballers();
+//    }
+//
+//    public HashSet<Coach> getTeamCoaches() {
+//        return this.teamMembers.getCoaches();
+//    }
+//
+//    public HashSet<Owner> getTeamOwners() {
+//        return this.teamMembers.getOwners();
+//    }
+//
+//    public HashSet<TeamManager> getTeamManagers() {
+//        return this.teamMembers.getTeamManagers();
+//    }
 
     public boolean addFinanceActivity(FinanceActivity financeActivity) {
         this.financeActivities.add(financeActivity);

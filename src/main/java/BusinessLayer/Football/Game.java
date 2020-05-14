@@ -138,9 +138,9 @@ public class Game {
     }
 
     public void notifyAllObservers() {
-        for (Fan fan : fansObserverID) {
-            fan.update();
-        }
+//        for (Fan fan : fansObserverID) {
+//            fan.update();
+//        }
     }
 
     public boolean removeReferee(Referee referee, RefereeRole refereeRole) {
