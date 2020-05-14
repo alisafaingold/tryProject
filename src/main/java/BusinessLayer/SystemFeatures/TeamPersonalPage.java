@@ -17,13 +17,13 @@ public class TeamPersonalPage extends PersonalPage {
 
     public TeamPersonalPage(SignedUser user, Team team) {
         super(user);
-        for (Coach teamCoach : team.getTeamCoaches()) {
-            coachName += teamCoach.getCoachPosition() + ": "+ teamCoach.getFirstName() +" " + teamCoach.getLastName()+"\n";
-        }
-
-        for (Footballer teamFootballer : team.getTeamFootballers()) {
-            teamFootballerMembers += teamFootballer.getFootballerPosition() +": " + teamFootballer.getFirstName()  +" " + teamFootballer.getLastName()+"\n";
-        }
+//        for (Coach teamCoach : team.getTeamCoaches()) {
+//            coachName += teamCoach.getCoachPosition() + ": "+ teamCoach.getFirstName() +" " + teamCoach.getLastName()+"\n";
+//        }
+//
+//        for (Footballer teamFootballer : team.getTeamFootballers()) {
+//            teamFootballerMembers += teamFootballer.getFootballerPosition() +": " + teamFootballer.getFirstName()  +" " + teamFootballer.getLastName()+"\n";
+//        }
 
         for (Field field : team.getFields()) {
             teamFields = "Filed Name: "+ field.getName() +", Field Location: "+ field.getLocation() +", Field Type: "+field.getFieldType()+
@@ -38,7 +38,7 @@ public class TeamPersonalPage extends PersonalPage {
     @Override
     public String toString() {
         String string = super.toString();
-        string += coachName +" " + teamFootballerMembers +" " + teamFields + " "+ records + " " + Games;
+//        string += coachName +" " + teamFootballerMembers +" " + teamFields + " "+ records + " " + Games;
         return string;
     }
 

@@ -89,8 +89,8 @@ public class ScoreBoardDao<T> implements Dao<ScoreBoard> {
 
     @Override
     public void delete(ScoreBoard scoreBoard) {
-        MongoCollection<Document> scoreBoards = mongoConnection.getScoreBoards();
-        scoreBoards.deleteOne(new Document("_id", new ObjectId(scoreBoard.get_id())));
+//        MongoCollection<Document> scoreBoards = mongoConnection.getScoreBoards();
+//        scoreBoards.deleteOne(new Document("_id", new ObjectId(scoreBoard.get_id())));
     }
 
     public List<ScoreBoard> getSeasons(List<String> scoreBoardIDs) {
