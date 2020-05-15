@@ -1,26 +1,20 @@
 package BusinessLayer;
 
-import BusinessLayer.Enum.RefereeTraining;
+import BusinessLayer.Enum.TeamState;
 import BusinessLayer.Football.Game;
 import BusinessLayer.Football.Season;
-import BusinessLayer.SystemFeatures.TeamMemberPersonalPage;
-import BusinessLayer.Users.*;
+import BusinessLayer.Football.Team;
+import BusinessLayer.Users.Fan;
+import BusinessLayer.Users.Owner;
+import BusinessLayer.Users.SignedUser;
+import BusinessLayer.Users.SystemManager;
 import CrossCutting.Utils;
 import DB.*;
-import BusinessLayer.Enum.TeamState;
 import ExternalServices.ExternalServices;
-import BusinessLayer.Football.Team;
-import ServiceLayer.Controllers.*;
-import com.google.gson.Gson;
+import ServiceLayer.Controllers.FanController;
+import ServiceLayer.Controllers.GuestController;
+import ServiceLayer.Controllers.SignedInController;
 import org.apache.commons.validator.routines.EmailValidator;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
-import static BusinessLayer.Enum.FootballerPosition.Center_Back;
 
 public class FootballAssociationSystem {
 
@@ -62,9 +56,9 @@ public class FootballAssociationSystem {
 //        teams.add(team);
 //        season.addReferee(referee1.getRefereeTraining(),referee1);
 //        season.addReferee(referee2.getRefereeTraining(),referee2);
-        UserDao userDao = new UserDao();
-        TeamDao teamDao = new TeamDao();
-        SeasonDao seasonDao = new SeasonDao();
+        UserDao userDao = UserDao.getInstance();
+        TeamDao teamDao = TeamDao.getInstance();
+        SeasonDao seasonDao = SeasonDao.getInstance();
 
 
 
@@ -102,7 +96,9 @@ public class FootballAssociationSystem {
         GuestController guestController = new GuestController();
 //        boolean b = guestController.singUp("thefan@gmail.com", "123321", "a", "f");
         SignedUser byEmail = userDao.getByEmail("thefan@gmail.com");
-
+        GamesDao gamesDao = GamesDao.getInstance();
+        gamesDao.save(game);
+        fanController.subscribe((Fan) byEmail,game);
 
 //        Fan f = new Fan("shachar@gmail.com", "12345654", "shachar", "rumney", "shachar@gmail.com");
 //        Gson jjs = new Gson();

@@ -3,18 +3,16 @@ package BusinessLayer.Football;
 import BusinessLayer.Enum.RefereeTraining;
 import BusinessLayer.Users.AssociationRepresentative;
 
-import java.util.HashMap;
-
 public class League {
     private String _id;
-    String leagueName;
-    long openDate;
-    AssociationRepresentative responsibleAssociationRepresentative;
-    RefereeTraining minRefereeTrainingRequired;
+    private String leagueName;
+    private long openDate;
+    private String responsibleAssociationRepresentative;
+    private RefereeTraining minRefereeTrainingRequired;
 
     public League(String leagueName, AssociationRepresentative associationRepresentative, RefereeTraining refereeTraining) {
         this.leagueName = leagueName;
-        this.responsibleAssociationRepresentative = associationRepresentative;
+        this.responsibleAssociationRepresentative = associationRepresentative.get_id();
         minRefereeTrainingRequired = refereeTraining;
         openDate = System.currentTimeMillis();
     }

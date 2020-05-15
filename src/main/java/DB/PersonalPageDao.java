@@ -20,11 +20,34 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
 public class PersonalPageDao<T> implements Dao<PersonalPage> {
-    MongoConnection mongoConnection = MongoConnection.getInstance();
-    Gson gson = new Gson();
-    JsonWriterSettings settings = JsonWriterSettings.builder()
-            .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
-            .build();
+    private static volatile PersonalPageDao instance = null;
+    private MongoConnection mongoConnection = MongoConnection.getInstance();
+    private Gson gson = new Gson();
+    private JsonWriterSettings settings;
+
+    private PersonalPageDao() {
+        try {
+            mongoConnection = MongoConnection.getInstance();
+            gson = new Gson();
+            settings = JsonWriterSettings.builder()
+                    .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
+                    .build();
+        }
+        catch (Exception e) {
+            System.out.println("constructor eror!!!");
+        }
+    }
+
+    public static PersonalPageDao getInstance() {
+        if (instance == null) {
+            synchronized(PersonalPageDao.class) {
+                if (instance == null) {
+                    instance = new PersonalPageDao();
+                }
+            }
+        }
+        return instance;
+    }
 
 
 

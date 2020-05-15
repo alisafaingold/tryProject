@@ -1,14 +1,6 @@
 package BusinessLayer.Users;
 
-import BusinessLayer.Enum.RefereeRole;
 import BusinessLayer.Enum.RefereeTraining;
-import BusinessLayer.Enum.UserStatus;
-import DB.SystemController;
-import BusinessLayer.Football.Game;
-import BusinessLayer.Football.Season;
-
-import java.util.HashMap;
-import java.util.HashSet;
 
 public class Referee extends SignedUser {
 

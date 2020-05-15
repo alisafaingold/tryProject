@@ -6,12 +6,22 @@ import DB.*;
 import BusinessLayer.Enum.UserStatus;
 import BusinessLayer.Users.*;
 import org.apache.commons.validator.routines.EmailValidator;
+import BusinessLayer.Enum.UserStatus;
+import BusinessLayer.Users.SignedUser;
+import CrossCutting.Utils;
+import DB.UserDao;
+
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
 public class SignedInController {
+    private UserDao userDao;
+
+    public SignedInController() {
+        this.userDao = UserDao.getInstance();
+    }
 
     //Use Case 2.2
     public boolean singUp (String email, String password, String fName, String lName) throws Exception {
@@ -43,7 +53,6 @@ public class SignedInController {
 
     //Use Case 2.3
     public boolean signIn (String username, String password) throws Exception {
-        UserDao userDao = new UserDao();
         if(username== null || password == null || username.length()<4 || password.length()<6){
             throw new Exception("Couldn't be that credentials");
         }
@@ -71,15 +80,13 @@ public class SignedInController {
         if(signedUser.getStatus().equals(UserStatus.LogOut))
             return false;
         signedUser.changeStatus(UserStatus.LogOut);
-        UserDao userDao = new UserDao();
         userDao.update(signedUser);
         return true;
     }
 
 
     //Use Case 4.1 5.1 10.1
-    public static boolean updateDetails(SignedUser signedUser, HashMap<String, String> valuesToUpdate) throws Exception {
-        UserDao userDao = new UserDao();
+    public boolean updateDetails(SignedUser signedUser, HashMap<String, String> valuesToUpdate) throws Exception {
         for (Map.Entry<String, String> entry : valuesToUpdate.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();

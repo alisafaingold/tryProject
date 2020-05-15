@@ -1,7 +1,6 @@
 package DB;
 
 import BusinessLayer.Football.Season;
-import BusinessLayer.Football.Team;
 import com.google.gson.Gson;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -21,12 +20,35 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
 public class SeasonDao<T> implements Dao<Season> {
-    MongoConnection mongoConnection = MongoConnection.getInstance();
-    Gson gson = new Gson();
-    JsonWriterSettings settings = JsonWriterSettings.builder()
-            .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
-            .objectIdConverter((value, writer) -> writer.writeString(value.toString()))
-            .build();
+    private static volatile SeasonDao instance = null;
+    private MongoConnection mongoConnection = MongoConnection.getInstance();
+    private Gson gson = new Gson();
+    private JsonWriterSettings settings;
+
+    private SeasonDao() {
+        try {
+            mongoConnection = MongoConnection.getInstance();
+            gson = new Gson();
+            settings = JsonWriterSettings.builder()
+                    .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
+                    .objectIdConverter((value, writer) -> writer.writeString(value.toString()))
+                    .build();
+        }
+        catch (Exception e) {
+            System.out.println("constructor eror!!!");
+        }
+    }
+
+    public static SeasonDao getInstance() {
+        if (instance == null) {
+            synchronized(SeasonDao.class) {
+                if (instance == null) {
+                    instance = new SeasonDao();
+                }
+            }
+        }
+        return instance;
+    }
 
     @Override
     public Optional<Season> get(String id) {

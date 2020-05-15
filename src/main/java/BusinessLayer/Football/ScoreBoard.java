@@ -1,25 +1,28 @@
 package BusinessLayer.Football;
 
+import DB.SeasonDao;
+
 import java.util.*;
 
 public class ScoreBoard {
-    int numOfTeams;
-    Season season;
-    HashMap<Team, TeamScores> board;
-    String _id;
+    private String _id;
+    private int numOfTeams;
+    private String season;
+    private HashMap<String, TeamScores> board;
 
     public ScoreBoard(Season s) {
-        this.season = s;
-        numOfTeams = season.getSeasonsTeams().size();
+        this.season = s.get_id();
+        numOfTeams = s.getSeasonsTeams().size();
         board = new HashMap<>();
         for (Team t : s.getSeasonsTeams()) {
-            board.put(t, new TeamScores(t));
+            board.put(t.get_id(), new TeamScores(t));
         }
     }
 
     public boolean updateScoreBoard(Game g) {
         TeamScores home = board.get(g.getHomeTeam());
         TeamScores away = board.get(g.getAwayTeam());
+
         int homeScore = g.getHomeScore();
         int awayScore = g.getAwayScore();
 
@@ -34,6 +37,7 @@ public class ScoreBoard {
         away.numOfGames++;
 
         //update points
+        Season season = (Season)SeasonDao.getInstance().get(this.season).get();
         int winPoints = season.getScorePolicy().getWinPoints();
         int tiePoints = season.getScorePolicy().getTiePoints();
         int losePoints = season.getScorePolicy().getLosePoints();

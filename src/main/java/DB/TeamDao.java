@@ -19,12 +19,35 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
 public class TeamDao<T> implements Dao<Team> {
-    MongoConnection mongoConnection = MongoConnection.getInstance();
-    Gson gson = new Gson();
-    JsonWriterSettings settings = JsonWriterSettings.builder()
-            .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
-            .objectIdConverter((value, writer) -> writer.writeString(value.toString()))
-            .build();
+    private static volatile TeamDao instance = null;
+    private MongoConnection mongoConnection = MongoConnection.getInstance();
+    private Gson gson = new Gson();
+    private JsonWriterSettings settings;
+
+    private TeamDao() {
+        try {
+            mongoConnection = MongoConnection.getInstance();
+            gson = new Gson();
+            settings = JsonWriterSettings.builder()
+                    .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
+                    .objectIdConverter((value, writer) -> writer.writeString(value.toString()))
+                    .build();
+        }
+        catch (Exception e) {
+            System.out.println("constructor eror!!!");
+        }
+    }
+
+    public static TeamDao getInstance() {
+        if (instance == null) {
+            synchronized(TeamDao.class) {
+                if (instance == null) {
+                    instance = new TeamDao();
+                }
+            }
+        }
+        return instance;
+    }
 
     @Override
     public Optional<Team> get(String id) {

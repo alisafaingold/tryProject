@@ -1,8 +1,11 @@
 package BusinessLayer.Football;
 
 import BusinessLayer.Enum.RefereeTraining;
+import BusinessLayer.SeasonPolicies.AssignPolicy;
+import BusinessLayer.SeasonPolicies.AssignPolicy2;
+import BusinessLayer.SeasonPolicies.ScoreComputingPolicy;
+import BusinessLayer.SeasonPolicies.ScoreComputingPolicy1;
 import BusinessLayer.Users.Referee;
-import BusinessLayer.SeasonPolicies.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,7 +19,6 @@ public class Season {
     private HashMap<RefereeTraining, HashSet<String>> referees;
     private String league;
     private HashSet<String> seasonsTeams;
-    private HashMap<Integer,HashSet<String>> RoundGames;
     private String scoreBoard;
     private String _id;
 
@@ -27,7 +29,6 @@ public class Season {
         scorePolicy=new ScoreComputingPolicy1();
         assignPolicy= new AssignPolicy2();
         referees = new HashMap<>();
-        RoundGames = new HashMap<>();
         seasonsTeams = new HashSet<>();
     }
 
@@ -107,16 +108,15 @@ public class Season {
         this._id = _id;
     }
 
-    public HashMap<RefereeTraining, HashSet<Referee>> getReferees() {
-        return null;
-    }
-
     public HashMap<Integer,HashSet<Game>> getGames() {
         return null;
     }
-
     public void setSeasonGames(HashMap<Integer, HashSet<Game>> roundGames) {
-        RoundGames = null;
+
+    }
+
+    public HashMap<RefereeTraining, HashSet<Referee>> getReferees() {
+        return null;
     }
 
     public ScoreBoard getScoreBoard() {

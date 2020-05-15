@@ -1,7 +1,6 @@
 package DB;
 
 import BusinessLayer.Football.Field;
-import BusinessLayer.Football.Season;
 import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
@@ -20,12 +19,35 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
 public class FieldDao<T> implements Dao<Field> {
-    MongoConnection mongoConnection = MongoConnection.getInstance();
-    Gson gson = new Gson();
-    JsonWriterSettings settings = JsonWriterSettings.builder()
-            .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
-            .objectIdConverter((value, writer) -> writer.writeString(value.toString()))
-            .build();
+    private static volatile FieldDao instance = null;
+    private MongoConnection mongoConnection = MongoConnection.getInstance();
+    private Gson gson = new Gson();
+    private JsonWriterSettings settings;
+
+    private FieldDao() {
+        try {
+            mongoConnection = MongoConnection.getInstance();
+            gson = new Gson();
+            settings = JsonWriterSettings.builder()
+                    .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
+                    .objectIdConverter((value, writer) -> writer.writeString(value.toString()))
+                    .build();
+        }
+        catch (Exception e) {
+            System.out.println("constructor eror!!!");
+        }
+    }
+
+    public static FieldDao getInstance() {
+        if (instance == null) {
+            synchronized(FieldDao.class) {
+                if (instance == null) {
+                    instance = new FieldDao();
+                }
+            }
+        }
+        return instance;
+    }
 
     @Override
     public Optional<Field> get(String id) {
@@ -100,5 +122,21 @@ public class FieldDao<T> implements Dao<Field> {
 
     private Field convertFieldDocument(Document dbField) {
         return gson.fromJson(dbField.toJson(settings), Field.class);
+    }
+
+    public List<Field> getTeamFields(String team) {
+        try {
+            MongoCollection<Document> fields = mongoConnection.getFields();
+            BasicDBObject query = new BasicDBObject("team", team);
+            ArrayList<Document> dbFields = fields.find(query).into(new ArrayList<>());
+            ArrayList<Field> allFields = new ArrayList<>();
+            for (Document dbField : dbFields) {
+                allFields.add(convertFieldDocument(dbField));
+            }
+            return allFields;
+        } catch (Exception e) {
+            //TODO what we should return
+            return null;
+        }
     }
 }

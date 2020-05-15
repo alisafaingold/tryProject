@@ -1,12 +1,8 @@
 package BusinessLayer.Users;
 
-import ServiceLayer.Controllers.PersonalPageSystem;
-import DB.SystemController;
-import CrossCutting.Utils;
 import BusinessLayer.Enum.CoachPosition;
-import BusinessLayer.Football.Team;
-import BusinessLayer.SystemFeatures.PersonalPage;
-import BusinessLayer.SystemFeatures.TeamMemberPersonalPage;
+import CrossCutting.Utils;
+import ServiceLayer.Controllers.PersonalPageSystem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +13,8 @@ public class Coach extends TeamUser implements Asset {
     public Coach(String username, String password, String firstName, String lastName, String email, CoachPosition coachPosition) {
         super(username, password, firstName, lastName, email);
         this.coachPosition = coachPosition;
-        PersonalPageSystem.createNewPersonalPage(this);
+        PersonalPageSystem personalPageSystem = new PersonalPageSystem();
+        personalPageSystem.createNewPersonalPage(this);
     }
 
     public CoachPosition getCoachPosition() {
