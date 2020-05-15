@@ -13,7 +13,8 @@ public class Coach extends TeamUser implements Asset {
     public Coach(String username, String password, String firstName, String lastName, String email, CoachPosition coachPosition) {
         super(username, password, firstName, lastName, email);
         this.coachPosition = coachPosition;
-        PersonalPageSystem.createNewPersonalPage(this);
+        PersonalPageSystem personalPageSystem = new PersonalPageSystem();
+        personalPageSystem.createNewPersonalPage(this);
     }
 
     public CoachPosition getCoachPosition() {

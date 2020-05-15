@@ -26,7 +26,8 @@ public class Team {
         this.state = state;
         this.teamMembers = new Members();
         this.financeActivities = new HashSet<>();
-        PersonalPageSystem.createNewPersonalPage(managementUser,this);
+        PersonalPageSystem personalPageSystem = new PersonalPageSystem();
+        personalPageSystem.createNewPersonalPage(managementUser,this);
     }
 
 
@@ -67,8 +68,7 @@ public class Team {
     public boolean addField(Field... fields) throws Exception {
         //TODO fields
         List<Field> addedFields = new ArrayList<>();
-        FieldDao fieldDao = new FieldDao();
-        List teamFields = fieldDao.getTeamFields(this._id);
+        List teamFields = FieldDao.getInstance().getTeamFields(this._id);
         for (Field field : fields) {
             if (teamFields.contains(field)) {
                 teamFields.removeAll(addedFields);
@@ -79,15 +79,14 @@ public class Team {
             }
         }
         for (Object teamField : teamFields) {
-            fieldDao.update((Field) teamField);
+            FieldDao.getInstance().update((Field) teamField);
         }
         return true;
     }
 
     public boolean removeField(Field... fields) throws Exception {
         List<Field> removedAssets = new ArrayList<>();
-        FieldDao fieldDao = new FieldDao();
-        List teamFields = fieldDao.getTeamFields(this._id);
+        List teamFields = FieldDao.getInstance().getTeamFields(this._id);
         for (Field field : fields) {
             if (teamFields.contains(field)) {
                 removedAssets.add(field);
@@ -98,7 +97,7 @@ public class Team {
             }
         }
         for (Object teamField : teamFields) {
-            fieldDao.update((Field) teamField);
+            FieldDao.getInstance().update((Field) teamField);
         }
         return true;
     }
@@ -126,8 +125,7 @@ public class Team {
     public HashSet<Field> getFields() {
         //TODO FIELD DAO
         HashSet<Field> fields = new HashSet<>();
-        FieldDao fieldDao = new FieldDao();
-        fields.addAll(fieldDao.getTeamFields(this._id));
+        fields.addAll(FieldDao.getInstance().getTeamFields(this._id));
         return fields;
     }
 

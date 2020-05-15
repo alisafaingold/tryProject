@@ -56,9 +56,9 @@ public class FootballAssociationSystem {
 //        teams.add(team);
 //        season.addReferee(referee1.getRefereeTraining(),referee1);
 //        season.addReferee(referee2.getRefereeTraining(),referee2);
-        UserDao userDao = new UserDao();
-        TeamDao teamDao = new TeamDao();
-        SeasonDao seasonDao = new SeasonDao();
+        UserDao userDao = UserDao.getInstance();
+        TeamDao teamDao = TeamDao.getInstance();
+        SeasonDao seasonDao = SeasonDao.getInstance();
 
         Season season1 = new Season(2020,12042020);
         Owner owner1 = new Owner("ron","123","ron","niceman","ron@gmail.com");
@@ -99,7 +99,7 @@ public class FootballAssociationSystem {
         GuestController guestController = new GuestController();
 //        boolean b = guestController.singUp("thefan@gmail.com", "123321", "a", "f");
         SignedUser byEmail = userDao.getByEmail("thefan@gmail.com");
-        GamesDao gamesDao = new GamesDao();
+        GamesDao gamesDao = GamesDao.getInstance();
         gamesDao.save(game);
         fanController.subscribe((Fan) byEmail,game);
 

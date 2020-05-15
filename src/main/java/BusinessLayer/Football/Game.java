@@ -49,20 +49,17 @@ public class Game {
 
     public Season getSeason() {
         //TODO ??
-        SeasonDao dao = new SeasonDao();
-        return (Season) dao.get(season).get();
+        return (Season) SeasonDao.getInstance().get(season).get();
     }
 
     public Team getHomeTeam() {
         //TODO ??
-        TeamDao dao = new TeamDao();
-        return (Team) dao.get(homeTeam).get();
+        return (Team) TeamDao.getInstance().get(homeTeam).get();
     }
 
     public Team getAwayTeam() {
         //TODO ??
-        TeamDao dao = new TeamDao();
-        return (Team) dao.get(awayTeam).get();
+        return (Team) TeamDao.getInstance().get(awayTeam).get();
     }
 
     public RefereeRole findRefereeRole(String rID){

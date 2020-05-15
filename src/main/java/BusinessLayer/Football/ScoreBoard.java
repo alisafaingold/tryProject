@@ -22,7 +22,6 @@ public class ScoreBoard {
     public boolean updateScoreBoard(Game g) {
         TeamScores home = board.get(g.getHomeTeam());
         TeamScores away = board.get(g.getAwayTeam());
-        SeasonDao dao = new SeasonDao();
 
         int homeScore = g.getHomeScore();
         int awayScore = g.getAwayScore();
@@ -38,7 +37,7 @@ public class ScoreBoard {
         away.numOfGames++;
 
         //update points
-        Season season = (Season)dao.get(this.season).get();
+        Season season = (Season)SeasonDao.getInstance().get(this.season).get();
         int winPoints = season.getScorePolicy().getWinPoints();
         int tiePoints = season.getScorePolicy().getTiePoints();
         int losePoints = season.getScorePolicy().getLosePoints();
