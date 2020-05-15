@@ -111,9 +111,8 @@ public class UserDao<T> implements Dao<SignedUser> {
             Document newUser = new Document();
             Document newUserJson = Document.parse(userJson);
             newUser.put("json", newUserJson);
-            newUser.put("type", signedUser.getClass().toString());
+            newUser.put("type", signedUser.getClass().toString().substring(6));
             users.insertOne(newUser);
-            signedUser.set_id(newUser.get("_id").toString());
         } catch (Exception e) {
             //TODO what we should return
         }
@@ -172,8 +171,7 @@ public class UserDao<T> implements Dao<SignedUser> {
     // ======== Help Methods =========
     private SignedUser convertUserDocument(Document dbUser) throws ClassNotFoundException {
         try {
-            String type1 = dbUser.getString("type");
-            String type = type1.substring(6);
+            String type = dbUser.getString("type");
             Document json = dbUser.get("json", Document.class);
             Class userClass = Class.forName(type);
             Object id = dbUser.get("_id");

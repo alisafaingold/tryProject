@@ -31,6 +31,14 @@ public class SignedInController {
         sessionIDToType = new HashMap<>();
     }
 
+    // For service
+    public String get_ID(int sessionID, String type ) throws Exception {
+        if(sessionIDToType.get(sessionID).equals(type))
+            return sessionIDToDBID.get(sessionID);
+        else
+            throw new Exception("type not match");
+    }
+
     //Use Case 2.2
     public boolean singUp(String email, String password, String fName, String lName) throws Exception {
         if (password == null || password.length() < 6) {
@@ -76,7 +84,7 @@ public class SignedInController {
             user.changeStatus(UserStatus.LogIn);
             userDao.update(user);
             sessionIDToDBID.put(sessionID, user.get_id());
-            sessionIDToType.put(sessionID, user.getClass().toString());
+            sessionIDToType.put(sessionID, user.getClass().toString().substring(6));
         } catch (Exception e) {
             //  e.printStackTrace();
         }

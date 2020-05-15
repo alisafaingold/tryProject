@@ -94,9 +94,8 @@ public class PersonalPageDao<T> implements Dao<PersonalPage> {
             Document newPersonalPage = new Document();
             Document newUserJson = Document.parse(personalPageJson);
             newPersonalPage.put("json",newUserJson);
-            newPersonalPage.put("type",personalPage.getClass().toString());
+            newPersonalPage.put("type",personalPage.getClass().toString().substring(6));
             personalPages.insertOne(newPersonalPage);
-            personalPage.set_id(newPersonalPage.get("_id").toString());
         } catch (Exception e) {
             //TODO what we should return
         }
@@ -180,8 +179,7 @@ public class PersonalPageDao<T> implements Dao<PersonalPage> {
     // ======== Help Methods =========
     private PersonalPage convertPersonalPageDocument(Document dbPersonalPage) throws ClassNotFoundException {
         try {
-            String type1 = dbPersonalPage.getString("type");
-            String type = type1.substring(6);
+            String type = dbPersonalPage.getString("type");
             Document json = dbPersonalPage.get("json", Document.class);
             Class userClass = Class.forName(type);
             Object id = dbPersonalPage.get("_id");
