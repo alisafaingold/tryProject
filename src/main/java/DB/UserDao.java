@@ -1,6 +1,5 @@
 package DB;
 
-import BusinessLayer.Football.Team;
 import BusinessLayer.Users.Referee;
 import BusinessLayer.Users.SignedUser;
 import com.google.gson.Gson;
@@ -12,7 +11,6 @@ import org.bson.conversions.Bson;
 import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,11 +19,34 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
 public class UserDao<T> implements Dao<SignedUser> {
-    MongoConnection mongoConnection = MongoConnection.getInstance();
-    Gson gson = new Gson();
-    JsonWriterSettings settings = JsonWriterSettings.builder()
-            .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
-            .build();
+    private static volatile UserDao instance = null;
+    private MongoConnection mongoConnection = MongoConnection.getInstance();
+    private Gson gson = new Gson();
+    private JsonWriterSettings settings;
+
+    private UserDao() {
+        try {
+            mongoConnection = MongoConnection.getInstance();
+            gson = new Gson();
+            settings = JsonWriterSettings.builder()
+                    .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
+                    .build();
+        }
+        catch (Exception e) {
+            System.out.println("constructor eror!!!");
+        }
+    }
+
+    public static UserDao getInstance() {
+        if (instance == null) {
+            synchronized(UserDao.class) {
+                if (instance == null) {
+                    instance = new UserDao();
+                }
+            }
+        }
+        return instance;
+    }
 
     @Override
     public Optional<SignedUser> get(String id) throws ClassNotFoundException {
@@ -130,7 +151,7 @@ public class UserDao<T> implements Dao<SignedUser> {
         List<Document> into = users.find(query).into(new ArrayList<>());
         if (!into.isEmpty()) {
             for (Document document : into) {
-                allReferees.add((Referee)convertUserDocument(document));
+                allReferees.add((Referee) convertUserDocument(document));
             }
         } else {
             return null;

@@ -1,13 +1,6 @@
 package BusinessLayer.Users;
 
-import ServiceLayer.Controllers.ComplaintSystemController;
-import DB.SystemController;
-import BusinessLayer.Football.Game;
-import BusinessLayer.SystemFeatures.Complaint;
-import BusinessLayer.SystemFeatures.PersonalPage;
-
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class Fan extends SignedUser {
     private long signedUpDate;

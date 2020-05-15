@@ -1,17 +1,17 @@
 package ServiceLayer.Controllers;
 
-import BusinessLayer.Users.ManagementUser;
-import BusinessLayer.Users.Owner;
-import BusinessLayer.Users.SignedUser;
-import BusinessLayer.Users.SystemManager;
 import BusinessLayer.Enum.ComplaintStatus;
 import BusinessLayer.Enum.TeamState;
 import BusinessLayer.Football.Team;
 import BusinessLayer.SystemFeatures.Complaint;
+import BusinessLayer.Users.ManagementUser;
+import BusinessLayer.Users.Owner;
+import BusinessLayer.Users.SignedUser;
+import BusinessLayer.Users.SystemManager;
 import CrossCutting.Utils;
-import DB.*;
-
-
+import DB.ComplaintDao;
+import DB.TeamDao;
+import DB.UserDao;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import java.io.BufferedReader;
@@ -24,36 +24,48 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SystemMangerController {
-    UserDao userDao;
-    TeamDao teamDao;
-    ComplaintDao complaintDao;
+    private UserDao userDao;
+    private TeamDao teamDao;
+    private ComplaintDao complaintDao;
 
     public SystemMangerController() {
-        userDao = new UserDao();
-        teamDao = new TeamDao();
-        complaintDao = new ComplaintDao();
+        userDao = UserDao.getInstance();
+        teamDao = TeamDao.getInstance();
+        complaintDao = ComplaintDao.getInstance();
     }
 
     //Wasn't in UC
     public Owner signUpNewOwner(String userId, ManagementUser teamOwner, String firstName, String lastName, String email) throws Exception {
-        boolean valid = EmailValidator.getInstance().isValid(email);
-        if (!valid)
-            throw new Exception("Not valid Email");
+        Optional optional = userDao.get(userId);
+        if(optional.isPresent()) {
+            SignedUser systemManager = (SignedUser) optional.get();
+            if(systemManager instanceof SystemManager) {
+                boolean valid = EmailValidator.getInstance().isValid(email);
+                if (!valid)
+                    throw new Exception("Not valid Email");
 
-        String password = lastName + "_" + firstName + "_123";
+                String password = lastName + "_" + firstName + "_123";
 
-        SignedUser byEmail = userDao.getByEmail(email);
-        if (byEmail != null)
-            throw new Exception("This user name already exist in the system");
+                SignedUser byEmail = userDao.getByEmail(email);
+                if (byEmail != null)
+                    throw new Exception("This user name already exist in the system");
 
-        //TODO Send Email
+                //TODO Send Email
 
-        String hashPassword = Utils.sha256(password);
+                String hashPassword = Utils.sha256(password);
 
-        Owner owner = new Owner(email, hashPassword, firstName, lastName, email);
-        userDao.save(owner);
+                Owner owner = new Owner(email, hashPassword, firstName, lastName, email);
+                userDao.save(owner);
 //                SystemController.userNameUser.put(email, owner);
-        return owner;
+                return owner;
+            }
+            else{
+                throw new Exception("The user with the following id is not system manager: " + userId);
+            }
+        }
+        else{
+            throw new Exception("There is no user with the following id: " + userId);
+        }
     }
 
     //UC 8.1

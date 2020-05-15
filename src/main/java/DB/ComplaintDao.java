@@ -4,9 +4,9 @@ import BusinessLayer.SystemFeatures.Complaint;
 import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.json.JsonWriterSettings;
-import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
@@ -18,14 +18,34 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
 public class ComplaintDao implements Dao<Complaint>{
+    private static volatile ComplaintDao instance = null;
+    private MongoConnection mongoConnection = MongoConnection.getInstance();
+    private Gson gson = new Gson();
+    private JsonWriterSettings settings;
+    private ComplaintDao() {
+        try {
+            mongoConnection = MongoConnection.getInstance();
+            gson = new Gson();
+            settings = JsonWriterSettings.builder()
+                    .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
+                    .objectIdConverter((value, writer) -> writer.writeString(value.toString()))
+                    .build();
+        }
+        catch (Exception e) {
+            System.out.println("constructor eror!!!");
+        }
+    }
 
-    MongoConnection mongoConnection = MongoConnection.getInstance();
-    Gson gson = new Gson();
-    JsonWriterSettings settings = JsonWriterSettings.builder()
-            .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
-            .objectIdConverter((value, writer) -> writer.writeString(value.toString()))
-            .build();
-
+    public static ComplaintDao getInstance() {
+        if (instance == null) {
+            synchronized(ComplaintDao.class) {
+                if (instance == null) {
+                    instance = new ComplaintDao();
+                }
+            }
+        }
+        return instance;
+    }
 
     @Override
     public Optional<Complaint> get(String id)  {

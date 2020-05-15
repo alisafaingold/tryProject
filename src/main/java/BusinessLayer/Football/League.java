@@ -3,8 +3,6 @@ package BusinessLayer.Football;
 import BusinessLayer.Enum.RefereeTraining;
 import BusinessLayer.Users.AssociationRepresentative;
 
-import java.util.HashMap;
-
 public class League {
     private String _id;
     private String leagueName;

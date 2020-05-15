@@ -1,42 +1,41 @@
 package ServiceLayer.Controllers;
 
+import BusinessLayer.Football.Team;
 import BusinessLayer.SystemFeatures.PersonalPage;
 import BusinessLayer.SystemFeatures.TeamMemberPersonalPage;
 import BusinessLayer.SystemFeatures.TeamPersonalPage;
-import BusinessLayer.Users.*;
+import BusinessLayer.Users.ManagementUser;
+import BusinessLayer.Users.TeamUser;
 import DB.PersonalPageDao;
 import DB.SystemController;
-import BusinessLayer.Football.Team;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class PersonalPageSystem {
+    private PersonalPageDao personalPageDao;
 
+    public PersonalPageSystem() {
+        personalPageDao = PersonalPageDao.getInstance();
+    }
     // ========== Add Personal Page to System ==========
 
 
-    public static boolean createNewPersonalPage(ManagementUser managementUser, Team team){
-        PersonalPageDao personalPageDao = new PersonalPageDao();
+    public boolean createNewPersonalPage(ManagementUser managementUser, Team team){
         TeamPersonalPage teamPersonalPage = new TeamPersonalPage(managementUser,team);
         personalPageDao.save(teamPersonalPage);
         return true;
     }
 
 
-    public static boolean createNewPersonalPage(TeamUser tu){
-        PersonalPageDao personalPageDao = new PersonalPageDao();
+    public boolean createNewPersonalPage(TeamUser tu){
         TeamMemberPersonalPage teamMemberPersonalPage = new TeamMemberPersonalPage(tu);
         personalPageDao.save(teamMemberPersonalPage);
         return true;
     }
 
     // ==========  Archive Personal Page ==========
-    public static boolean moveToArchive(PersonalPage personalPage) {
-        PersonalPageDao personalPageDao = new PersonalPageDao();
+    public boolean moveToArchive(PersonalPage personalPage) {
         personalPageDao.delete(personalPage);
         //Logger
         SystemController.logger.info("Deletion | Personal Page have been move to archive; Personal Page ID: " + personalPage.get_id() +
@@ -88,7 +87,6 @@ public class PersonalPageSystem {
             }
         }
     }
-        PersonalPageDao personalPageDao = new PersonalPageDao();
         personalPageDao.update(personalPage);
         return true;
     }
@@ -99,7 +97,6 @@ public class PersonalPageSystem {
             for (Map.Entry<String, String> entry : valuesToUpdate.entrySet()) {
                 ((TeamMemberPersonalPage) personalPage).setContent(entry.getKey()+": "+ entry.getValue()+"\n");
             }
-            PersonalPageDao personalPageDao = new PersonalPageDao();
             personalPageDao.update(personalPage);
             return true;
         }

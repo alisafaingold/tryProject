@@ -1,6 +1,6 @@
 package BusinessLayer.Football;
 
-import BusinessLayer.Users.*;
+import BusinessLayer.Users.SignedUser;
 
 import java.util.HashSet;
 

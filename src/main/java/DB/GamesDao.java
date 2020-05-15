@@ -1,10 +1,7 @@
 package DB;
 
 import BusinessLayer.Football.Game;
-import BusinessLayer.Football.ScoreBoard;
-import BusinessLayer.Football.Season;
 import BusinessLayer.Users.Fan;
-import BusinessLayer.Users.Referee;
 import com.google.gson.Gson;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -15,18 +12,44 @@ import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
 public class GamesDao<T> implements Dao<Game> {
-    MongoConnection mongoConnection = MongoConnection.getInstance();
-    Gson gson = new Gson();
-    JsonWriterSettings settings = JsonWriterSettings.builder()
-            .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
-            .objectIdConverter((value, writer) -> writer.writeString(value.toString()))
-            .build();
+    private static volatile GamesDao instance = null;
+    private MongoConnection mongoConnection = MongoConnection.getInstance();
+    private Gson gson = new Gson();
+    private JsonWriterSettings settings;
+
+    private GamesDao() {
+        try {
+            mongoConnection = MongoConnection.getInstance();
+            gson = new Gson();
+            settings =  JsonWriterSettings.builder()
+                    .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
+                    .objectIdConverter((value, writer) -> writer.writeString(value.toString()))
+                    .build();
+        }
+        catch (Exception e) {
+            System.out.println("constructor eror!!!");
+        }
+    }
+
+    public static GamesDao getInstance() {
+        if (instance == null) {
+            synchronized(GamesDao.class) {
+                if (instance == null) {
+                    instance = new GamesDao();
+                }
+            }
+        }
+        return instance;
+    }
 
     @Override
     public Optional<Game> get(String id) {

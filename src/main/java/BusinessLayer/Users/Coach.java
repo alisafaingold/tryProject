@@ -1,12 +1,8 @@
 package BusinessLayer.Users;
 
-import ServiceLayer.Controllers.PersonalPageSystem;
-import DB.SystemController;
-import CrossCutting.Utils;
 import BusinessLayer.Enum.CoachPosition;
-import BusinessLayer.Football.Team;
-import BusinessLayer.SystemFeatures.PersonalPage;
-import BusinessLayer.SystemFeatures.TeamMemberPersonalPage;
+import CrossCutting.Utils;
+import ServiceLayer.Controllers.PersonalPageSystem;
 
 import java.util.HashMap;
 import java.util.Map;

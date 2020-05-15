@@ -1,13 +1,5 @@
 package BusinessLayer.Users;
 
-import DB.SystemController;
-import ServiceLayer.Controllers.TeamOwnerController;
-import BusinessLayer.Football.Team;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 public abstract class ManagementUser extends TeamUser {
     protected String additionalRole;
 

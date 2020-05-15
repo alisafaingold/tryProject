@@ -1,12 +1,6 @@
 package ServiceLayer.Controllers;
 
-import CrossCutting.Utils;
-import DB.LeagueDao;
-import DB.SeasonDao;
-import DB.SystemController;
 import BusinessLayer.Enum.RefereeTraining;
-import DB.UserDao;
-import ExternalServices.ExternalServices;
 import BusinessLayer.Football.League;
 import BusinessLayer.Football.Season;
 import BusinessLayer.Football.Team;
@@ -15,6 +9,12 @@ import BusinessLayer.SeasonPolicies.ScoreComputingPolicy;
 import BusinessLayer.Users.AssociationRepresentative;
 import BusinessLayer.Users.Referee;
 import BusinessLayer.Users.SignedUser;
+import CrossCutting.Utils;
+import DB.LeagueDao;
+import DB.SeasonDao;
+import DB.SystemController;
+import DB.UserDao;
+import ExternalServices.ExternalServices;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import java.util.ArrayList;
@@ -22,13 +22,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static DB.SystemController.*;
+import static DB.SystemController.userNameUser;
 
 public class AssociationRepresentativeController {
+    private LeagueDao leagueDao;
+    private SeasonDao seasonDao;
+    private UserDao userDao;
+
+    public AssociationRepresentativeController() {
+        leagueDao = LeagueDao.getInstance();
+        seasonDao = SeasonDao.getInstance();
+        userDao = UserDao.getInstance();
+    }
 
     //Use Case 9.1
     public boolean defineNewLeague(AssociationRepresentative associationRepresentative, String leagueName, RefereeTraining refereeTraining) throws Exception {
-        LeagueDao leagueDao = new LeagueDao();
         League leagueByName = leagueDao.getLeagueByName(leagueName);
         if (leagueByName!=null)
             throw new Exception("This league name is already exist");
@@ -44,7 +52,6 @@ public class AssociationRepresentativeController {
 
     //Use Case 9.2
     public boolean addSeasonToLeague(AssociationRepresentative associationRepresentative, League league, Integer year, long startDate) throws Exception {
-        SeasonDao seasonDao = new SeasonDao();
         int length = String.valueOf(year).length();
         if (length != 4 || year <= 2000 || year >= 2022) {
             throw new Exception("Not Valid Year");
@@ -67,7 +74,6 @@ public class AssociationRepresentativeController {
 
     //Use Case 9.3.1
     public boolean appointReferee(AssociationRepresentative associationRepresentative, int id, String fName, String lName, String email, RefereeTraining refereeTraining) throws Exception {
-        UserDao userDao = new UserDao();
         int length = String.valueOf(id).length();
         String password = String.valueOf(id);
         boolean valid = EmailValidator.getInstance().isValid(email);
@@ -102,7 +108,6 @@ public class AssociationRepresentativeController {
     //TODO need to find replacer referee
     public boolean removeReferee(AssociationRepresentative associationRepresentative, Referee referee) throws Exception {
 //        SignedUser remove = userNameUser.remove(referee.getFirstName() + "_" + referee.getLastName());
-        UserDao userDao = new UserDao();
         SignedUser remove = userNameUser.remove(referee.getEmail());
         userDao.delete(referee);
         referee.deleteUser();
@@ -114,7 +119,6 @@ public class AssociationRepresentativeController {
 
     //Use Case 9.4 A
     public Set<Referee> getAllRefereeThatCanBeForLeague(League league) throws ClassNotFoundException {
-        UserDao userDao = new UserDao();
         int numTraining = league.getMinRefereeTrainingRequired().getNumVal();
         ArrayList refereesThatFitToTraining = userDao.getRefereesThatFitToTraining(numTraining);
         return (Set<Referee>) refereesThatFitToTraining;
@@ -122,7 +126,6 @@ public class AssociationRepresentativeController {
 
     //Use Case 9.4 B
     public boolean setRefereeToSeason(AssociationRepresentative associationRepresentative, Season season, Referee... referees) {
-        SeasonDao seasonDao = new SeasonDao<>();
         for (Referee referee : referees) {
             season.addReferee(referee.getRefereeTraining(), referee);
             //Logger
@@ -135,7 +138,6 @@ public class AssociationRepresentativeController {
 
     //UseCase 9.5
     public boolean setScoreComputingPolicy(AssociationRepresentative associationRepresentative, Season season, ScoreComputingPolicy scoreComputingPolicy) throws Exception {
-        SeasonDao seasonDao = new SeasonDao<>();
         long currentTime = System.currentTimeMillis();
         if (season.getStartDate() <= currentTime)
             throw new Exception("Season already started");
@@ -152,7 +154,6 @@ public class AssociationRepresentativeController {
 
     //UseCase 9.6
     public boolean setAssignPolicy(AssociationRepresentative associationRepresentative, Season season, AssignPolicy assignPolicy) throws Exception {
-        SeasonDao seasonDao = new SeasonDao<>();
         long currentTime = System.currentTimeMillis();
         if (season.getStartDate() <= currentTime)
             throw new Exception("Season already started");
@@ -168,7 +169,6 @@ public class AssociationRepresentativeController {
 
     //UseCase 9.7* TBD
     public boolean assignGames(AssociationRepresentative associationRepresentative, Season season) throws Exception {
-        SeasonDao seasonDao = new SeasonDao<>();
         if (!(season.getGames().size()==0))
             throw new Exception("Seasons games already assigned");
 
@@ -182,7 +182,6 @@ public class AssociationRepresentativeController {
     }
 
     public boolean setSeasonsTeams(AssociationRepresentative associationRepresentative, Season season,HashSet<Team> seasonsTeams) throws Exception {
-        SeasonDao seasonDao = new SeasonDao<>();
         if (!(season.getSeasonsTeams().size()==0))
             throw new Exception("Seasons teams already assigned");
 

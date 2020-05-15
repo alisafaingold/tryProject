@@ -1,26 +1,20 @@
 package BusinessLayer;
 
-import BusinessLayer.Enum.RefereeTraining;
+import BusinessLayer.Enum.TeamState;
 import BusinessLayer.Football.Game;
 import BusinessLayer.Football.Season;
-import BusinessLayer.SystemFeatures.TeamMemberPersonalPage;
-import BusinessLayer.Users.*;
+import BusinessLayer.Football.Team;
+import BusinessLayer.Users.Fan;
+import BusinessLayer.Users.Owner;
+import BusinessLayer.Users.SignedUser;
+import BusinessLayer.Users.SystemManager;
 import CrossCutting.Utils;
 import DB.*;
-import BusinessLayer.Enum.TeamState;
 import ExternalServices.ExternalServices;
-import BusinessLayer.Football.Team;
-import ServiceLayer.Controllers.*;
-import com.google.gson.Gson;
+import ServiceLayer.Controllers.FanController;
+import ServiceLayer.Controllers.GuestController;
+import ServiceLayer.Controllers.SignedInController;
 import org.apache.commons.validator.routines.EmailValidator;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
-import static BusinessLayer.Enum.FootballerPosition.Center_Back;
 
 public class FootballAssociationSystem {
 

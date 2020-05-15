@@ -1,10 +1,10 @@
 package BusinessLayer.Football;
 
+import BusinessLayer.Enum.FieldType;
 import BusinessLayer.Enum.RefereeRole;
 import BusinessLayer.SystemFeatures.EventLog;
 import BusinessLayer.Users.Fan;
 import BusinessLayer.Users.Referee;
-import BusinessLayer.Enum.FieldType;
 import DB.SeasonDao;
 import DB.TeamDao;
 

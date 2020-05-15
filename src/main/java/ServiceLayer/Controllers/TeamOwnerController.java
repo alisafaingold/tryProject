@@ -1,32 +1,39 @@
 package ServiceLayer.Controllers;
 
-import BusinessLayer.Users.*;
-import CrossCutting.Utils;
-import DB.*;
 import BusinessLayer.Enum.CoachPosition;
 import BusinessLayer.Enum.FootballerPosition;
 import BusinessLayer.Enum.TeamManagerPermissions;
 import BusinessLayer.Enum.TeamState;
-import ExternalServices.ExternalServices;
 import BusinessLayer.Football.Field;
 import BusinessLayer.Football.FinanceActivity;
 import BusinessLayer.Football.Team;
+import BusinessLayer.Users.*;
+import CrossCutting.Utils;
+import DB.ComplaintDao;
+import DB.FieldDao;
+import DB.TeamDao;
+import DB.UserDao;
+import ExternalServices.ExternalServices;
 import org.apache.commons.validator.routines.EmailValidator;
 
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 public class TeamOwnerController {
-    private static UserDao userDao = new UserDao();
-    private static TeamDao teamDao= new TeamDao();
-    private static ComplaintDao complaintDao= new ComplaintDao();
-    private static FieldDao fieldDao = new FieldDao();
+    private UserDao userDao;
+    private TeamDao teamDao;
+    private ComplaintDao complaintDao;
+    private FieldDao fieldDao;
 
+    public TeamOwnerController() {
+        userDao = UserDao.getInstance();
+        teamDao = TeamDao.getInstance();
+        complaintDao = ComplaintDao.getInstance();
+        fieldDao = FieldDao.getInstance();
+    }
 
     //Wasn't in UC
-    public static Footballer signUpNewFootballer(ManagementUser teamOwner, String firstName, String lastName, String email,
+    public Footballer signUpNewFootballer(ManagementUser teamOwner, String firstName, String lastName, String email,
                                                  FootballerPosition footballerPosition, Team team) throws Exception {
         if (teamOwner instanceof Owner) {
 
@@ -57,7 +64,7 @@ public class TeamOwnerController {
 
     }
 
-    public static Coach signUpNewCoach(ManagementUser teamOwner, String firstName, String lastName, String email,
+    public Coach signUpNewCoach(ManagementUser teamOwner, String firstName, String lastName, String email,
                                        CoachPosition coachPosition, Team team) throws Exception {
         if (teamOwner instanceof Owner) {
             boolean valid = EmailValidator.getInstance().isValid(email);
@@ -85,7 +92,7 @@ public class TeamOwnerController {
             throw new Exception("The user doesn't have permissions for this one");
     }
 
-    public static boolean changePermissionsForTeamManager(ManagementUser managementUser, TeamManager teamManager,
+    public boolean changePermissionsForTeamManager(ManagementUser managementUser, TeamManager teamManager,
                                                           EnumMap<TeamManagerPermissions, Boolean> changes) throws Exception {
         if (managementUser instanceof Owner || (managementUser instanceof TeamManager && ((TeamManager) managementUser).hasPermission(TeamManagerPermissions.EditPermissions))) {
             if (teamManager == managementUser)
@@ -98,7 +105,7 @@ public class TeamOwnerController {
 
 
     //UC 6.1
-    public static Team addNewTeamToSystem(ManagementUser teamOwner, String teamName) throws Exception {
+    public Team addNewTeamToSystem(ManagementUser teamOwner, String teamName) throws Exception {
         if (teamOwner instanceof Owner) {
             if (teamDao.getByTeamName(teamName).isPresent())
                 throw new Exception("There is already team with the exact name");
@@ -116,7 +123,7 @@ public class TeamOwnerController {
     }
 
     //UC 6.1.1
-    public static boolean addFieldToTeam(ManagementUser managementUser, Team team, Field field) throws Exception {
+    public boolean addFieldToTeam(ManagementUser managementUser, Team team, Field field) throws Exception {
         if (managementUser instanceof Owner || (managementUser instanceof TeamManager && ((TeamManager) managementUser).hasPermission(TeamManagerPermissions.AddAsset))) {
             team.addField(field);
             teamDao.update(team);
@@ -125,7 +132,7 @@ public class TeamOwnerController {
             throw new Exception("The user doesn't have permissions for this one");
     }
 
-    public static boolean addMemberToTeam(ManagementUser managementUser, Team team, TeamUser teamUser) throws Exception {
+    public boolean addMemberToTeam(ManagementUser managementUser, Team team, TeamUser teamUser) throws Exception {
         if (managementUser instanceof Owner || (managementUser instanceof TeamManager && ((TeamManager) managementUser).hasPermission(TeamManagerPermissions.AddAsset))) {
             team.addTeamMember(managementUser, teamUser);
             teamDao.update(team);
@@ -135,7 +142,7 @@ public class TeamOwnerController {
     }
 
     //UC 6.1.2
-    public static boolean removeFieldFromTeam(ManagementUser managementUser, Team team, Field field) throws Exception {
+    public boolean removeFieldFromTeam(ManagementUser managementUser, Team team, Field field) throws Exception {
         if (managementUser instanceof Owner || (managementUser instanceof TeamManager && ((TeamManager) managementUser).hasPermission(TeamManagerPermissions.RemoveAsset))) {
             team.removeField(field);
             teamDao.update(team);
@@ -144,7 +151,7 @@ public class TeamOwnerController {
             throw new Exception("The user doesn't have permissions for this one");
     }
 
-    public static boolean removeMemberFromTeam(ManagementUser managementUser, Team team, TeamUser teamUser) throws Exception {
+    public boolean removeMemberFromTeam(ManagementUser managementUser, Team team, TeamUser teamUser) throws Exception {
         if (managementUser instanceof Owner || (managementUser instanceof TeamManager && ((TeamManager) managementUser).hasPermission(TeamManagerPermissions.AddAsset))) {
             team.removeTeamMember(managementUser, teamUser);
             teamDao.update(team);
@@ -155,7 +162,7 @@ public class TeamOwnerController {
 
     //Maybe we shouldn't change
     //UC 6.1.3
-    public static boolean editAssetOfTeam(ManagementUser managementUser, Asset asset, HashMap<String, String> changes) throws Exception {
+    public boolean editAssetOfTeam(ManagementUser managementUser, Asset asset, HashMap<String, String> changes) throws Exception {
         if (managementUser instanceof Owner || (managementUser instanceof TeamManager && ((TeamManager) managementUser).hasPermission(TeamManagerPermissions.EditAsset))) {
             asset.editAsset(changes);
             if(asset instanceof Field)
@@ -236,7 +243,7 @@ public class TeamOwnerController {
 //    }
 
     //UC 6.4
-    public static TeamManager signUpNewTeamManager(ManagementUser addingOwner, String firstName, String lastName, String email, Team team) throws Exception {
+    public TeamManager signUpNewTeamManager(ManagementUser addingOwner, String firstName, String lastName, String email, Team team) throws Exception {
         if (addingOwner instanceof Owner || (addingOwner instanceof TeamManager && ((TeamManager) addingOwner).hasPermission(TeamManagerPermissions.AddManager))) {
             boolean valid = EmailValidator.getInstance().isValid(email);
             if (!valid)
@@ -285,7 +292,7 @@ public class TeamOwnerController {
 //    }
 
     //UC 6.6.1
-    public static boolean closeTeam(ManagementUser managementUser, Team team) throws Exception {
+    public boolean closeTeam(ManagementUser managementUser, Team team) throws Exception {
         if (managementUser instanceof Owner || (managementUser instanceof TeamManager && ((TeamManager) managementUser).hasPermission(TeamManagerPermissions.CloseTeam))) {
             if (team.getState() == TeamState.active) {
                 team.setStatus(TeamState.notActive);
@@ -300,7 +307,7 @@ public class TeamOwnerController {
     }
 
     //UC 6.6.2
-    public static boolean openTeam(ManagementUser managementUser, Team team) throws Exception {
+    public boolean openTeam(ManagementUser managementUser, Team team) throws Exception {
         if (managementUser instanceof Owner || (managementUser instanceof TeamManager && ((TeamManager) managementUser).hasPermission(TeamManagerPermissions.OpenTeam))) {
             TeamState state = team.getState();
             if (state == TeamState.notActive) {
@@ -319,7 +326,7 @@ public class TeamOwnerController {
     }
 
     //UC 6.7
-    public static boolean addFinanceAction(ManagementUser managementUser, Team team, String kind, double amount, String description, long date,
+    public boolean addFinanceAction(ManagementUser managementUser, Team team, String kind, double amount, String description, long date,
                                            ManagementUser reporter) throws Exception {
         if (managementUser instanceof Owner || (managementUser instanceof TeamManager && ((TeamManager) managementUser).hasPermission(TeamManagerPermissions.EditAsset))) {
             FinanceActivity financeActivity = new FinanceActivity(kind, amount, description, date, reporter);

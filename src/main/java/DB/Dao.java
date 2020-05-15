@@ -1,7 +1,5 @@
 package DB;
 
-import BusinessLayer.Football.Team;
-
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;

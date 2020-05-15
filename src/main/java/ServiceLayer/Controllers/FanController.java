@@ -1,24 +1,36 @@
 package ServiceLayer.Controllers;
 
-import CrossCutting.Utils;
-import DB.*;
 import BusinessLayer.Enum.ComplaintStatus;
 import BusinessLayer.Football.Game;
 import BusinessLayer.SystemFeatures.Complaint;
-import BusinessLayer.Users.Fan;
 import BusinessLayer.SystemFeatures.PersonalPage;
+import BusinessLayer.Users.Fan;
+import CrossCutting.Utils;
+import DB.GamesDao;
+import DB.PersonalPageDao;
+import DB.SystemController;
+import DB.UserDao;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class FanController {
+    private PersonalPageDao personalPageDao;
+    private GamesDao gamesDao;
+    private ComplaintSystemController complaintSystemController;
+    private UserDao userDao;
 
+    public FanController() {
+        personalPageDao = PersonalPageDao.getInstance();
+        gamesDao = GamesDao.getInstance();
+        userDao = UserDao.getInstance();
+        complaintSystemController = new ComplaintSystemController();
+    }
 
     // ============== Follow ============
     //Use Case 3.2
     public boolean follow(Fan fan, PersonalPage personalPage) throws ClassNotFoundException {
-        PersonalPageDao personalPageDao = new PersonalPageDao();
         PersonalPage personalPageDB = personalPageDao.checkFollow(fan, personalPage);
         if(personalPage!=null){
             personalPage.removeFans(fan);
@@ -34,7 +46,6 @@ public class FanController {
     // ============ Subscribe ===========
     //Use Case 3.3 - observer
     public boolean subscribe(Fan fan, Game game) {
-        GamesDao gamesDao  = new GamesDao();
         Game gameDB = gamesDao.checkObserver(fan, game);
         if(gameDB!=null){
             game.removeObserver(fan);
@@ -54,21 +65,20 @@ public class FanController {
             return false;
         }
         Complaint complaint = new Complaint(fan, description);
-        ComplaintSystemController.addComplaint(complaint);
+        complaintSystemController.addComplaint(complaint);
         return true;
 
     }
 
     public boolean closeComplaint(Fan fan, Complaint complaint) {
         complaint.setStatus(ComplaintStatus.Closed);
-        ComplaintSystemController.moveToClose(complaint);
+        complaintSystemController.moveToClose(complaint);
         return true;
     }
 
     // ============ Search History ==============
     //Use Case 3.5
     public Map<String, Long> mySearchHistory(Fan fan, long fromDate, long toDate) throws Exception {
-        UserDao userDao = new UserDao();
         if (fromDate < fan.getSignedUpDate() || fromDate > toDate) {
             throw new Exception("Wrong Dates");
         }
@@ -83,7 +93,6 @@ public class FanController {
     // ========= Update ==============
     //Use Case 3.6
     public boolean updateDetails(Fan fan, HashMap<String, String> valuesToUpdate) {
-        UserDao userDao = new UserDao();
         for (Map.Entry<String, String> entry : valuesToUpdate.entrySet()) {
             switch (entry.getKey().toLowerCase()) {
                 case "firstname":
