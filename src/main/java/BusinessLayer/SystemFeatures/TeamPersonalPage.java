@@ -2,6 +2,8 @@ package BusinessLayer.SystemFeatures;
 
 import BusinessLayer.Football.Field;
 import BusinessLayer.Football.Team;
+import BusinessLayer.Users.Coach;
+import BusinessLayer.Users.Footballer;
 import BusinessLayer.Users.SignedUser;
 import DB.SystemController;
 

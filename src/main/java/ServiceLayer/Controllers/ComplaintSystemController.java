@@ -5,9 +5,6 @@ import BusinessLayer.SystemFeatures.Complaint;
 import DB.ComplaintDao;
 import DB.SystemController;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
 public class ComplaintSystemController {
     private ComplaintDao complaintDao;
 

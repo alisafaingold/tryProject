@@ -4,28 +4,32 @@ import BusinessLayer.Football.Team;
 import BusinessLayer.SystemFeatures.PersonalPage;
 import BusinessLayer.SystemFeatures.TeamMemberPersonalPage;
 import BusinessLayer.SystemFeatures.TeamPersonalPage;
+import BusinessLayer.Users.Coach;
+import BusinessLayer.Users.Footballer;
 import BusinessLayer.Users.ManagementUser;
 import BusinessLayer.Users.TeamUser;
 import DB.PersonalPageDao;
 import DB.SystemController;
-import BusinessLayer.Football.Team;
 import DB.UserDao;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class PersonalPageSystem {
     private PersonalPageDao personalPageDao;
+    private UserDao userDao;
 
     public PersonalPageSystem() {
         personalPageDao = PersonalPageDao.getInstance();
+        userDao = UserDao.getInstance();
     }
     // ========== Add Personal Page to System ==========
 
 
     public boolean createNewPersonalPage(ManagementUser managementUser, Team team) throws ClassNotFoundException {
         TeamPersonalPage teamPersonalPage = new TeamPersonalPage(managementUser, team);
-        HashSet <Footballer> fotFootballers = new HashSet<>();
+        HashSet<Footballer> fotFootballers = new HashSet<>();
         HashSet <Coach> coaches = new HashSet<>();
         HashSet allFootballer = userDao.getAll(fotFootballers);
         HashSet allCoach = userDao.getAll(coaches);

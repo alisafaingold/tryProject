@@ -1,9 +1,5 @@
 package BusinessLayer;
 
-import BusinessLayer.Enum.TeamState;
-import BusinessLayer.Football.Game;
-import BusinessLayer.Football.Season;
-import BusinessLayer.Football.Team;
 import BusinessLayer.Users.Fan;
 import BusinessLayer.Users.Owner;
 import BusinessLayer.Users.SignedUser;
