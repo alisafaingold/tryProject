@@ -66,27 +66,22 @@ public class FootballAssociationSystem {
         TeamDao teamDao = new TeamDao();
         SeasonDao seasonDao = new SeasonDao();
 
-        Season season1 = new Season(2020,12042020);
-        Owner owner1 = new Owner("ron","123","ron","niceman","ron@gmail.com");
-        Owner owner2 = new Owner("dan","123","dan","glizman","dan@gmail.com");
-        Team team1= new Team("beitar", TeamState.active,owner1);
-        Team team2 = new Team("galil",TeamState.active,owner2);
 
-//
+
 //        teamDao.save(team1);
 //        teamDao.save(team2);
 
-        Team t1=null;
-        Team t2=null;
-        int counter=1;
-
-        for (Object o : teamDao.getAll()) {
-            if(counter==1)
-                t1= (Team) o;
-            if(counter==2)
-                t2= (Team) o;
-            counter++;
-        }
+//        Team t1=null;
+//        Team t2=null;
+//        int counter=1;
+//
+//        for (Object o : teamDao.getAll()) {
+//            if(counter==1)
+//                t1= (Team) o;
+//            if(counter==2)
+//                t2= (Team) o;
+//            counter++;
+//        }
 
 //
 //        userDao.save(owner1);
@@ -98,16 +93,15 @@ public class FootballAssociationSystem {
 
 
 
-        Game game = new Game(season1,t1,t2);
-//        Fan fan = new Fan("fan1","123","the","fan","thefan@gmail.com");
+//
+//        Fan fan = new Fan("fan1","123333","the","fan","thefan11@gmail.com");
+//        userDao.save(fan);
+        userDao.getByIdSearch("thefan11@gmail.com","bbbbb");
         FanController fanController = new FanController();
         SignedInController signedInController = new SignedInController();
         GuestController guestController = new GuestController();
 //        boolean b = guestController.singUp("thefan@gmail.com", "123321", "a", "f");
         SignedUser byEmail = userDao.getByEmail("thefan@gmail.com");
-        GamesDao gamesDao = new GamesDao();
-        gamesDao.save(game);
-        fanController.subscribe((Fan) byEmail,game);
 
 
 //        Fan f = new Fan("shachar@gmail.com", "12345654", "shachar", "rumney", "shachar@gmail.com");

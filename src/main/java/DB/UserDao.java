@@ -1,6 +1,5 @@
 package DB;
 
-import BusinessLayer.Football.Team;
 import BusinessLayer.Users.Referee;
 import BusinessLayer.Users.SignedUser;
 import com.google.gson.Gson;
@@ -12,8 +11,8 @@ import org.bson.conversions.Bson;
 import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +36,21 @@ public class UserDao<T> implements Dao<SignedUser> {
             return Optional.ofNullable(convertUserDocument(user));
         } else
             return null;
+    }
+
+    public HashSet<SignedUser> getAll(HashSet<String> ids) throws ClassNotFoundException {
+        MongoCollection<Document> users = mongoConnection.getUsers();
+        HashSet<SignedUser> allUsers = new HashSet<>();
+
+        for (String id : ids) {
+            BasicDBObject query = new BasicDBObject("_id", new ObjectId(id));
+            ArrayList<Document> DBusers = users.find(query).into(new ArrayList<>());
+            if (!DBusers.isEmpty()) {
+                Document user = DBusers.get(0);
+                allUsers.add(convertUserDocument(user));
+            }
+        }
+        return allUsers;
     }
 
     @Override
@@ -130,7 +144,7 @@ public class UserDao<T> implements Dao<SignedUser> {
         List<Document> into = users.find(query).into(new ArrayList<>());
         if (!into.isEmpty()) {
             for (Document document : into) {
-                allReferees.add((Referee)convertUserDocument(document));
+                allReferees.add((Referee) convertUserDocument(document));
             }
         } else {
             return null;

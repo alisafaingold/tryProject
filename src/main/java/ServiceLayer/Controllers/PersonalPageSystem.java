@@ -7,6 +7,7 @@ import BusinessLayer.Users.*;
 import DB.PersonalPageDao;
 import DB.SystemController;
 import BusinessLayer.Football.Team;
+import DB.UserDao;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,15 +20,22 @@ public class PersonalPageSystem {
     // ========== Add Personal Page to System ==========
 
 
-    public static boolean createNewPersonalPage(ManagementUser managementUser, Team team){
+    public static boolean createNewPersonalPage(ManagementUser managementUser, Team team) throws ClassNotFoundException {
         PersonalPageDao personalPageDao = new PersonalPageDao();
-        TeamPersonalPage teamPersonalPage = new TeamPersonalPage(managementUser,team);
+        UserDao userDao = new UserDao();
+        TeamPersonalPage teamPersonalPage = new TeamPersonalPage(managementUser, team);
+        HashSet <Footballer> fotFootballers = new HashSet<>();
+        HashSet <Coach> coaches = new HashSet<>();
+        HashSet allFootballer = userDao.getAll(fotFootballers);
+        HashSet allCoach = userDao.getAll(coaches);
+        teamPersonalPage.setTeamCoach(allCoach);
+        teamPersonalPage.setTeamFootballers(allFootballer);
         personalPageDao.save(teamPersonalPage);
         return true;
     }
 
 
-    public static boolean createNewPersonalPage(TeamUser tu){
+    public static boolean createNewPersonalPage(TeamUser tu) {
         PersonalPageDao personalPageDao = new PersonalPageDao();
         TeamMemberPersonalPage teamMemberPersonalPage = new TeamMemberPersonalPage(tu);
         personalPageDao.save(teamMemberPersonalPage);
@@ -46,7 +54,7 @@ public class PersonalPageSystem {
 
     // ========== Update Personal Page ==========
     //Use Case 4.1 5.1
-    public boolean updatePersonalPage(PersonalPage personalPage, HashMap<String,String> valuesToUpdate) {
+    public boolean updatePersonalPage(PersonalPage personalPage, HashMap<String, String> valuesToUpdate) {
         if (personalPage instanceof TeamMemberPersonalPage) {
             for (Map.Entry<String, String> entry : valuesToUpdate.entrySet()) {
                 switch (entry.getKey()) {
@@ -69,35 +77,35 @@ public class PersonalPageSystem {
             }
         } else {
             for (Map.Entry<String, String> entry : valuesToUpdate.entrySet()) {
-            switch (entry.getKey()) {
-                case "coachName":
-                    ((TeamPersonalPage) personalPage).setCoachName(entry.getValue());
-                    break;
-                case "teamFootballerMembers":
-                    ((TeamPersonalPage) personalPage).setTeamFootballerMembers(entry.getValue());
-                    break;
-                case "teamFields":
-                    ((TeamPersonalPage) personalPage).setTeamFields(entry.getValue());
-                    break;
-                case "records":
-                    ((TeamPersonalPage) personalPage).setRecords(entry.getValue());
-                    break;
-                case "Games":
-                    ((TeamPersonalPage) personalPage).setGames(entry.getValue());
-                    break;
+                switch (entry.getKey()) {
+                    case "coachName":
+                        ((TeamPersonalPage) personalPage).setCoachName(entry.getValue());
+                        break;
+                    case "teamFootballerMembers":
+                        ((TeamPersonalPage) personalPage).setTeamFootballerMembers(entry.getValue());
+                        break;
+                    case "teamFields":
+                        ((TeamPersonalPage) personalPage).setTeamFields(entry.getValue());
+                        break;
+                    case "records":
+                        ((TeamPersonalPage) personalPage).setRecords(entry.getValue());
+                        break;
+                    case "Games":
+                        ((TeamPersonalPage) personalPage).setGames(entry.getValue());
+                        break;
+                }
             }
         }
-    }
         PersonalPageDao personalPageDao = new PersonalPageDao();
         personalPageDao.update(personalPage);
         return true;
     }
 
     //Use Case 4.2 5.2
-    public boolean addContentToPersonalPage(PersonalPage personalPage, HashMap<String,String> valuesToUpdate){
-        if(personalPage instanceof TeamMemberPersonalPage){
+    public boolean addContentToPersonalPage(PersonalPage personalPage, HashMap<String, String> valuesToUpdate) {
+        if (personalPage instanceof TeamMemberPersonalPage) {
             for (Map.Entry<String, String> entry : valuesToUpdate.entrySet()) {
-                ((TeamMemberPersonalPage) personalPage).setContent(entry.getKey()+": "+ entry.getValue()+"\n");
+                ((TeamMemberPersonalPage) personalPage).setContent(entry.getKey() + ": " + entry.getValue() + "\n");
             }
             PersonalPageDao personalPageDao = new PersonalPageDao();
             personalPageDao.update(personalPage);
