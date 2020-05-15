@@ -35,49 +35,62 @@ public class SystemMangerController {
     }
 
     //Wasn't in UC
-    public Owner signUpNewOwner(String userId, ManagementUser teamOwner, String firstName, String lastName, String email) throws Exception {
+    public Owner signUpNewOwner(String userId, String teamOwnerID, String firstName, String lastName, String email) throws Exception {
         Optional optional = userDao.get(userId);
-        if(optional.isPresent()) {
-            SignedUser systemManager = (SignedUser) optional.get();
-            if(systemManager instanceof SystemManager) {
-                boolean valid = EmailValidator.getInstance().isValid(email);
-                if (!valid)
-                    throw new Exception("Not valid Email");
+        Optional optional1 = userDao.get(teamOwnerID);
+        if(optional1.isPresent()){
+            ManagementUser teamOwner = (ManagementUser) optional1.get();
+            if(optional.isPresent()) {
+                SignedUser systemManager = (SignedUser) optional.get();
+                if(systemManager instanceof SystemManager) {
+                    boolean valid = EmailValidator.getInstance().isValid(email);
+                    if (!valid)
+                        throw new Exception("Not valid Email");
 
-                String password = lastName + "_" + firstName + "_123";
+                    String password = lastName + "_" + firstName + "_123";
 
-                SignedUser byEmail = userDao.getByEmail(email);
-                if (byEmail != null)
-                    throw new Exception("This user name already exist in the system");
+                    SignedUser byEmail = userDao.getByEmail(email);
+                    if (byEmail != null)
+                        throw new Exception("This user name already exist in the system");
 
-                //TODO Send Email
+                    //TODO Send Email
 
-                String hashPassword = Utils.sha256(password);
+                    String hashPassword = Utils.sha256(password);
 
-                Owner owner = new Owner(email, hashPassword, firstName, lastName, email);
-                userDao.save(owner);
+                    Owner owner = new Owner(email, hashPassword, firstName, lastName, email);
+                    userDao.save(owner);
 //                SystemController.userNameUser.put(email, owner);
-                return owner;
+                    return owner;
+                }
+                else{
+                    throw new Exception("The user with the following id is not system manager: " + userId);
+                }
             }
             else{
-                throw new Exception("The user with the following id is not system manager: " + userId);
+                throw new Exception("There is no user with the following id: " + userId);
             }
+        } else {
+            throw new Exception("Wrong IDS");
         }
-        else{
-            throw new Exception("There is no user with the following id: " + userId);
-        }
+
     }
 
     //UC 8.1
-    public boolean permanentlyCloseTeam(Team team) throws Exception {
-        if (team.getState() == TeamState.active || team.getState() == TeamState.notActive) {
-            //Todo send alerts
-            team.setStatus(TeamState.permanentlyClosed);
-            teamDao.delete(team);
+    public boolean permanentlyCloseTeam(String teamID) throws Exception {
+        Optional optional = teamDao.get(teamID);
+        if(optional.isPresent()){
+            Team team = (Team) optional.get();
+            if (team.getState() == TeamState.active || team.getState() == TeamState.notActive) {
+                //Todo send alerts
+                team.setStatus(TeamState.permanentlyClosed);
+                teamDao.delete(team);
+            } else {
+                throw new Exception("This team is already permanently closed");
+            }
+            return true;
         } else {
-            throw new Exception("This team is already permanently closed");
+            throw new Exception("Wrong IDS");
         }
-        return true;
     }
 
     //UC 8.2
@@ -94,17 +107,36 @@ public class SystemMangerController {
     }
 
     //UC 8.3.2
-    public boolean addCommentToComplaint(SystemManager systemManager, Complaint complaint, String comment) throws Exception {
-        boolean b = complaint.addComment(systemManager, comment);
-        complaintDao.update(complaint);
-        return b;
-        //TODO send notification to the fan
+    public boolean addCommentToComplaint(String systemManagerID, String complaintID, String comment) throws Exception {
+        Optional optional = userDao.get(systemManagerID);
+        Optional optional1 = complaintDao.get(complaintID);
+        if( optional.isPresent() && optional1.isPresent()){
+            Complaint complaint = (Complaint) optional1.get();
+            SystemManager systemManager = (SystemManager) optional.get();
+            boolean b = complaint.addComment(systemManager, comment);
+            complaintDao.update(complaint);
+            return b;
+            //TODO send notification to the fan
+        } else {
+            throw new Exception("Wrong IDS");
+        }
+
+
     }
 
-    public boolean closeComplaint(SystemManager systemManager, Complaint complaint) {
-        complaint.setStatus(ComplaintStatus.Closed);
-        complaintDao.delete(complaint);
-        return true;
+    public boolean closeComplaint(String systemManagerID, String complaintID) throws Exception {
+        Optional optional = userDao.get(systemManagerID);
+        Optional optional1 = complaintDao.get(complaintID);
+        if( optional.isPresent() && optional1.isPresent()) {
+            Complaint complaint = (Complaint) optional1.get();
+            SystemManager systemManager = (SystemManager) optional.get();
+            complaint.setStatus(ComplaintStatus.Closed);
+            complaintDao.delete(complaint);
+            return true;
+        } else {
+            throw new Exception("Wrong IDS");
+
+        }
     }
 
     //UC 8.4

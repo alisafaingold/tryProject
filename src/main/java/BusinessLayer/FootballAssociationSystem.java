@@ -86,15 +86,15 @@ public class FootballAssociationSystem {
 //
 //        Fan fan = new Fan("fan1","123333","the","fan","thefan11@gmail.com");
 //        userDao.save(fan);
-        userDao.getByIdSearch("thefan11@gmail.com","bbbbb");
-        FanController fanController = new FanController();
-        SignedInController signedInController = new SignedInController();
-        GuestController guestController = new GuestController();
-//        boolean b = guestController.singUp("thefan@gmail.com", "123321", "a", "f");
-        SignedUser byEmail = userDao.getByEmail("thefan@gmail.com");
-        GamesDao gamesDao = GamesDao.getInstance();
-        gamesDao.save(game);
-        fanController.subscribe((Fan) byEmail,game);
+//        userDao.getByIdSearch("thefan11@gmail.com","bbbbb");
+//        FanController fanController = new FanController();
+//        SignedInController signedInController = new SignedInController();
+//        GuestController guestController = new GuestController();
+////        boolean b = guestController.singUp("thefan@gmail.com", "123321", "a", "f");
+//        SignedUser byEmail = userDao.getByEmail("thefan@gmail.com");
+//        GamesDao gamesDao = GamesDao.getInstance();
+//        gamesDao.save(game);
+//        fanController.subscribe((Fan) byEmail,game);
 
 //        Fan f = new Fan("shachar@gmail.com", "12345654", "shachar", "rumney", "shachar@gmail.com");
 //        Gson jjs = new Gson();

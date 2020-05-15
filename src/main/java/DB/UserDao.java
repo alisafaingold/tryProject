@@ -32,15 +32,14 @@ public class UserDao<T> implements Dao<SignedUser> {
             settings = JsonWriterSettings.builder()
                     .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
                     .build();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("constructor eror!!!");
         }
     }
 
     public static UserDao getInstance() {
         if (instance == null) {
-            synchronized(UserDao.class) {
+            synchronized (UserDao.class) {
                 if (instance == null) {
                     instance = new UserDao();
                 }
@@ -51,129 +50,183 @@ public class UserDao<T> implements Dao<SignedUser> {
 
     @Override
     public Optional<SignedUser> get(String id) throws ClassNotFoundException {
-        MongoCollection<Document> users = mongoConnection.getUsers();
-        BasicDBObject query = new BasicDBObject("_id", new ObjectId(id));
-        ArrayList<Document> DBusers = users.find(query).into(new ArrayList<>());
-        if (!DBusers.isEmpty()) {
-            Document user = DBusers.get(0);
-            return Optional.ofNullable(convertUserDocument(user));
-        } else
+        try {
+            MongoCollection<Document> users = mongoConnection.getUsers();
+            BasicDBObject query = new BasicDBObject("_id", new ObjectId(id));
+            ArrayList<Document> DBusers = users.find(query).into(new ArrayList<>());
+            if(DBusers.isEmpty())
+                return Optional.empty();
+            return Optional.ofNullable(convertUserDocument(DBusers.get(0)));
+        } catch (Exception e) {
+            //TODO what we should return
             return null;
+        }
+
+
     }
 
     public HashSet<SignedUser> getAll(HashSet<String> ids) throws ClassNotFoundException {
-        MongoCollection<Document> users = mongoConnection.getUsers();
-        HashSet<SignedUser> allUsers = new HashSet<>();
+        try {
+            MongoCollection<Document> users = mongoConnection.getUsers();
+            HashSet<SignedUser> allUsers = new HashSet<>();
 
-        for (String id : ids) {
-            BasicDBObject query = new BasicDBObject("_id", new ObjectId(id));
-            ArrayList<Document> DBusers = users.find(query).into(new ArrayList<>());
-            if (!DBusers.isEmpty()) {
-                Document user = DBusers.get(0);
-                allUsers.add(convertUserDocument(user));
+            for (String id : ids) {
+                BasicDBObject query = new BasicDBObject("_id", new ObjectId(id));
+                ArrayList<Document> DBusers = users.find(query).into(new ArrayList<>());
+                if (!DBusers.isEmpty()) {
+                    Document user = DBusers.get(0);
+                    allUsers.add(convertUserDocument(user));
+                }
             }
+            return allUsers;
+        } catch (Exception e) {
+            //TODO what we should return
+            return null;
         }
-        return allUsers;
+
     }
 
     @Override
     public List<SignedUser> getAll() throws ClassNotFoundException {
-        MongoCollection<Document> users = mongoConnection.getUsers();
-        ArrayList<Document> dbUsers = users.find().into(new ArrayList<>());
-        ArrayList<SignedUser> allUsers = new ArrayList<>();
-        for (Document dbUser : dbUsers)
-            allUsers.add(convertUserDocument(dbUser));
-        return allUsers;
+        try {
+            MongoCollection<Document> users = mongoConnection.getUsers();
+            ArrayList<Document> dbUsers = users.find().into(new ArrayList<>());
+            ArrayList<SignedUser> allUsers = new ArrayList<>();
+            for (Document dbUser : dbUsers)
+                allUsers.add(convertUserDocument(dbUser));
+            return allUsers;
+        } catch (Exception e) {
+            //TODO what we should return
+            return null;
+        }
+
 
     }
 
     @Override
     public void save(SignedUser signedUser) {
-        MongoCollection<Document> users = mongoConnection.getUsers();
-        String userJson = gson.toJson(signedUser);
-        Document newUser = new Document();
-        Document newUserJson = Document.parse(userJson);
-        newUser.put("json", newUserJson);
-        newUser.put("type", signedUser.getClass().toString());
-        users.insertOne(newUser);
-        signedUser.set_id(newUser.get("_id").toString());
+        try {
+            MongoCollection<Document> users = mongoConnection.getUsers();
+            String userJson = gson.toJson(signedUser);
+            Document newUser = new Document();
+            Document newUserJson = Document.parse(userJson);
+            newUser.put("json", newUserJson);
+            newUser.put("type", signedUser.getClass().toString());
+            users.insertOne(newUser);
+            signedUser.set_id(newUser.get("_id").toString());
+        } catch (Exception e) {
+            //TODO what we should return
+        }
+
     }
 
     @Override
     public void update(SignedUser signedUser) {
-        MongoCollection<Document> users = mongoConnection.getUsers();
-        Bson filter = eq("_id", new ObjectId(signedUser.get_id()));
-        Bson change = set("json", Document.parse(gson.toJson(signedUser)));
-        users.updateOne(filter, change);
+        try {
+            MongoCollection<Document> users = mongoConnection.getUsers();
+            Bson filter = eq("_id", new ObjectId(signedUser.get_id()));
+            Bson change = set("json", Document.parse(gson.toJson(signedUser)));
+            users.updateOne(filter, change);
+        } catch (Exception e) {
+            //TODO what we should return
+        }
+
     }
 
     @Override
     public void delete(SignedUser signedUser) {
-        MongoCollection<Document> users = mongoConnection.getUsers();
-        MongoCollection<Document> archiveUsers = mongoConnection.getArchiveUsers();
-        //remove document to archive
-        Document user = users.find(eq("_id", new ObjectId(signedUser.get_id()))).first();
-        if (user != null) {
-            archiveUsers.insertOne(user);
+        try {
+            MongoCollection<Document> users = mongoConnection.getUsers();
+            MongoCollection<Document> archiveUsers = mongoConnection.getArchiveUsers();
+            //remove document to archive
+            Document user = users.find(eq("_id", new ObjectId(signedUser.get_id()))).first();
+            if (user != null) {
+                archiveUsers.insertOne(user);
+            }
+            // delete from users
+            users.deleteOne(new Document("_id", new ObjectId(signedUser.get_id())));
+        } catch (Exception e) {
+            //TODO what we should return
         }
-        // delete from users
-        users.deleteOne(new Document("_id", new ObjectId(signedUser.get_id())));
+
     }
 
     public SignedUser getByEmail(String email) throws ClassNotFoundException {
-        MongoCollection<Document> users = mongoConnection.getUsers();
-        BasicDBObject query = new BasicDBObject("json.email", email);
-        ArrayList<Document> DBusers = users.find(query).into(new ArrayList<>());
-        if (!DBusers.isEmpty()) {
-            Document user = DBusers.get(0);
-            return convertUserDocument(user);
-        } else
+        try {
+            MongoCollection<Document> users = mongoConnection.getUsers();
+            BasicDBObject query = new BasicDBObject("json.email", email);
+            ArrayList<Document> DBusers = users.find(query).into(new ArrayList<>());
+            if (!DBusers.isEmpty()) {
+                Document user = DBusers.get(0);
+                return convertUserDocument(user);
+            } else
+                return null;
+        } catch (Exception e) {
+            //TODO what we should return
             return null;
+        }
+
     }
 
 
     // ======== Help Methods =========
     private SignedUser convertUserDocument(Document dbUser) throws ClassNotFoundException {
-        String type1 = dbUser.getString("type");
-        String type = type1.substring(6);
-        Document json = dbUser.get("json", Document.class);
-        Class userClass = Class.forName(type);
-        Object id = dbUser.get("_id");
-        SignedUser signedUser = (SignedUser) gson.fromJson(json.toJson(settings), userClass);
-        signedUser.set_id(id.toString());
-        return signedUser;
+        try {
+            String type1 = dbUser.getString("type");
+            String type = type1.substring(6);
+            Document json = dbUser.get("json", Document.class);
+            Class userClass = Class.forName(type);
+            Object id = dbUser.get("_id");
+            SignedUser signedUser = (SignedUser) gson.fromJson(json.toJson(settings), userClass);
+            signedUser.set_id(id.toString());
+            return signedUser;
+        } catch (Exception e) {
+            //TODO what we should return
+            return null;
+        }
+
     }
 
 
     //Validation Function
     public ArrayList<SignedUser> getById(String id) throws ClassNotFoundException {
-        MongoCollection<Document> users = mongoConnection.getUsers();
-        BasicDBObject query = new BasicDBObject("json.id", id);
-        ArrayList<Document> DBusers = users.find(query).into(new ArrayList<>());
-        ArrayList<SignedUser> allUsersWithName = new ArrayList<>();
-        for (Document dbUser : DBusers)
-            allUsersWithName.add(convertUserDocument(dbUser));
+        try {
+            MongoCollection<Document> users = mongoConnection.getUsers();
+            BasicDBObject query = new BasicDBObject("json.id", id);
+            ArrayList<Document> DBusers = users.find(query).into(new ArrayList<>());
+            ArrayList<SignedUser> allUsersWithName = new ArrayList<>();
+            for (Document dbUser : DBusers)
+                allUsersWithName.add(convertUserDocument(dbUser));
 
-        return allUsersWithName;
+            return allUsersWithName;
+        } catch (Exception e) {
+            //TODO what we should return
+            return null;
+        }
+
     }
 
     public ArrayList<Referee> getRefereesThatFitToTraining(int numTraining) throws ClassNotFoundException {
-        MongoCollection<Document> users = mongoConnection.getUsers();
-        ArrayList<Referee> allReferees = new ArrayList<>();
-        BasicDBList and = new BasicDBList();
-        and.add(new BasicDBObject("type", "Referee"));
-        and.add(new BasicDBObject("json.refereeTraining", numTraining));
-        BasicDBObject query = new BasicDBObject("$and", and);
-        List<Document> into = users.find(query).into(new ArrayList<>());
-        if (!into.isEmpty()) {
-            for (Document document : into) {
-                allReferees.add((Referee) convertUserDocument(document));
-            }
-        } else {
-            return null;
-        }
-        return allReferees;
-
+         try {
+             MongoCollection<Document> users = mongoConnection.getUsers();
+             ArrayList<Referee> allReferees = new ArrayList<>();
+             BasicDBList and = new BasicDBList();
+             and.add(new BasicDBObject("type", "Referee"));
+             and.add(new BasicDBObject("json.refereeTraining", numTraining));
+             BasicDBObject query = new BasicDBObject("$and", and);
+             List<Document> into = users.find(query).into(new ArrayList<>());
+             if (!into.isEmpty()) {
+                 for (Document document : into) {
+                     allReferees.add((Referee) convertUserDocument(document));
+                 }
+             } else {
+                 return null;
+             }
+             return allReferees;
+         } catch (Exception e) {
+             //TODO what we should return
+             return null;
+         }
     }
 
 
