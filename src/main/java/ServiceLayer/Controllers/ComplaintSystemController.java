@@ -5,6 +5,8 @@ import BusinessLayer.SystemFeatures.Complaint;
 import DB.ComplaintDao;
 import DB.SystemController;
 
+import java.util.Optional;
+
 public class ComplaintSystemController {
     private ComplaintDao complaintDao;
 
@@ -28,8 +30,16 @@ public class ComplaintSystemController {
         return true;
     }
 
-    public boolean moveToClose(Complaint complaint) {
-        complaintDao.delete(complaint);
-        return true;
+    public boolean moveToClose(String complaintID) throws Exception {
+        Optional<Complaint> complaint1 = complaintDao.get(complaintID);
+        if(complaint1.isPresent()){
+            Complaint complaint = complaint1.get();
+            complaint.setStatus(ComplaintStatus.Closed);
+            complaintDao.delete(complaint);
+            return true;
+        } else {
+            throw new Exception("Wrong IDS");
+        }
+
     }
 }

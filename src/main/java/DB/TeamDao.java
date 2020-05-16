@@ -10,10 +10,7 @@ import org.bson.json.JsonWriterSettings;
 import org.bson.types.ObjectId;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
@@ -135,10 +132,10 @@ public class TeamDao<T> implements Dao<Team> {
         teams.deleteOne(new Document("_id", new ObjectId(team.get_id())));
     }
 
-    public List<Team> getTeams(List<String> teamsIDs) {
+    public HashSet<Team> getAll(HashSet<String> teamsIDs) {
         try {
             MongoCollection<Document> teams = mongoConnection.getTeams();
-            ArrayList<Team> allTeams = new ArrayList<>();
+            HashSet<Team> allTeams = new HashSet<>();
             BasicDBObject query;
             for (String teamID : teamsIDs) {
                 query = new BasicDBObject("_id", new ObjectId(teamID));

@@ -53,109 +53,170 @@ public class PersonalPageDao<T> implements Dao<PersonalPage> {
 
     @Override
     public Optional<PersonalPage> get(String id) throws ClassNotFoundException {
-        MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
-        BasicDBObject query = new BasicDBObject("_id",new ObjectId(id));
-        ArrayList<Document> DBPersonalPages = personalPages.find(query).into(new ArrayList<>());
-        if(!DBPersonalPages.isEmpty()){
-            Document personalPage = DBPersonalPages.get(0);
-            return Optional.ofNullable(convertPersonalPageDocument(personalPage));
-        }
-        else
+        try {
+            MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
+            BasicDBObject query = new BasicDBObject("_id",new ObjectId(id));
+            ArrayList<Document> DBPersonalPages = personalPages.find(query).into(new ArrayList<>());
+            if(!DBPersonalPages.isEmpty()){
+                Document personalPage = DBPersonalPages.get(0);
+                return Optional.ofNullable(convertPersonalPageDocument(personalPage));
+            }
+            else
+                return Optional.empty();
+        } catch (Exception e) {
+            //TODO what we should return
             return null;
+        }
+
     }
 
     @Override
     public List<PersonalPage> getAll() throws ClassNotFoundException {
-        MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
-        ArrayList<Document> DBPersonalPages = personalPages.find().into(new ArrayList<>());
-        ArrayList<PersonalPage> allPersonalPages = new ArrayList<>();
-        for (Document dbPersonalPage : DBPersonalPages)
-            allPersonalPages.add(convertPersonalPageDocument(dbPersonalPage));
-        return allPersonalPages;
+        try {
+            MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
+            ArrayList<Document> DBPersonalPages = personalPages.find().into(new ArrayList<>());
+            ArrayList<PersonalPage> allPersonalPages = new ArrayList<>();
+            for (Document dbPersonalPage : DBPersonalPages)
+                allPersonalPages.add(convertPersonalPageDocument(dbPersonalPage));
+            return allPersonalPages;
+        } catch (Exception e) {
+            //TODO what we should return
+            return null;
+        }
+
     }
 
     @Override
     public void save(PersonalPage personalPage) {
-        MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
-        String personalPageJson = gson.toJson(personalPage);
-        Document newPersonalPage = new Document();
-        Document newUserJson = Document.parse(personalPageJson);
-        newPersonalPage.put("json",newUserJson);
-        newPersonalPage.put("type",personalPage.getClass().toString());
-        personalPages.insertOne(newPersonalPage);
-        personalPage.set_id(newPersonalPage.get("_id").toString());
+        try {
+            MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
+            String personalPageJson = gson.toJson(personalPage);
+            Document newPersonalPage = new Document();
+            Document newUserJson = Document.parse(personalPageJson);
+            newPersonalPage.put("json",newUserJson);
+            newPersonalPage.put("type",personalPage.getClass().toString().substring(6));
+            personalPages.insertOne(newPersonalPage);
+        } catch (Exception e) {
+            //TODO what we should return
+        }
+
     }
 
     @Override
     public void update(PersonalPage personalPage) {
-        MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
-        Bson filter = eq("_id", new ObjectId(personalPage.get_id()));
-        Bson change = set("json", Document.parse(gson.toJson(personalPage)));
-        personalPages.updateOne(filter, change);
+        try {
+            MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
+            Bson filter = eq("_id", new ObjectId(personalPage.get_id()));
+            Bson change = set("json", Document.parse(gson.toJson(personalPage)));
+            personalPages.updateOne(filter, change);
+        } catch (Exception e) {
+            //TODO what we should return
+        }
+
     }
 
     @Override
     public void delete(PersonalPage pp) {
-        MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
-        MongoCollection<Document> archivePersonalPages = mongoConnection.getArchivePersonalPages();
+        try {
+            MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
+            MongoCollection<Document> archivePersonalPages = mongoConnection.getArchivePersonalPages();
 
-        //remove document to archive
-        Document personalPage = personalPages.find(eq("_id", new ObjectId(pp.get_id()))).first();
-        if(personalPage!=null){
-            archivePersonalPages.insertOne(personalPage);
+            //remove document to archive
+            Document personalPage = personalPages.find(eq("_id", new ObjectId(pp.get_id()))).first();
+            if(personalPage!=null){
+                archivePersonalPages.insertOne(personalPage);
+            }
+            // delete from users
+            personalPages.deleteOne(new Document("_id", new ObjectId(pp.get_id())));
+        } catch (Exception e) {
+            //TODO what we should return
         }
-        // delete from users
-        personalPages.deleteOne(new Document("_id", new ObjectId(pp.get_id())));
+
+    }
+
+    public void delete(String ppID) {
+        try {
+            MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
+            MongoCollection<Document> archivePersonalPages = mongoConnection.getArchivePersonalPages();
+
+            //remove document to archive
+            Document personalPage = personalPages.find(eq("_id", new ObjectId(ppID))).first();
+            if(personalPage!=null){
+                archivePersonalPages.insertOne(personalPage);
+            }
+            // delete from users
+            personalPages.deleteOne(new Document("_id", new ObjectId(ppID)));
+        } catch (Exception e) {
+            //TODO what we should return
+        }
+
     }
 
 
     public PersonalPage checkFollow(Fan fan, PersonalPage personalPage ) throws ClassNotFoundException {
-        MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
-        BasicDBList and = new BasicDBList();
-        and.add(new BasicDBObject("_id",new ObjectId(personalPage.get_id())));
-        and.add(new BasicDBObject("json.fans", new ObjectId(fan.get_id())));
-        BasicDBObject query = new BasicDBObject("$and", and);
-        ArrayList<Document> DBPersonalPages = personalPages.find(query).into(new ArrayList<>());
-        if(!DBPersonalPages.isEmpty()){
-            return convertPersonalPageDocument(DBPersonalPages.get(0));
-        }
-        else {
+        try {
+            MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
+            BasicDBList and = new BasicDBList();
+            and.add(new BasicDBObject("_id",new ObjectId(personalPage.get_id())));
+            and.add(new BasicDBObject("json.fans", new ObjectId(fan.get_id())));
+            BasicDBObject query = new BasicDBObject("$and", and);
+            ArrayList<Document> DBPersonalPages = personalPages.find(query).into(new ArrayList<>());
+            if(!DBPersonalPages.isEmpty()){
+                return convertPersonalPageDocument(DBPersonalPages.get(0));
+            }
+            else {
+                return null;
+            }
+        } catch (Exception e) {
+            //TODO what we should return\
             return null;
         }
+
     }
 
 
 
     // ======== Help Methods =========
     private PersonalPage convertPersonalPageDocument(Document dbPersonalPage) throws ClassNotFoundException {
-        String type1 = dbPersonalPage.getString("type");
-        String type = type1.substring(6);
-        Document json = dbPersonalPage.get("json", Document.class);
-        Class userClass = Class.forName(type);
-        Object id = dbPersonalPage.get("_id");
-        PersonalPage personalPage = (PersonalPage) gson.fromJson(json.toJson(settings), userClass);
-        personalPage.set_id(id.toString());
-        return personalPage;
+        try {
+            String type = dbPersonalPage.getString("type");
+            Document json = dbPersonalPage.get("json", Document.class);
+            Class userClass = Class.forName(type);
+            Object id = dbPersonalPage.get("_id");
+            PersonalPage personalPage = (PersonalPage) gson.fromJson(json.toJson(settings), userClass);
+            personalPage.set_id(id.toString());
+            return personalPage;
+        } catch (Exception e) {
+            //TODO what we should return\
+            return null;
+        }
+
 
     }
 
     public HashSet<PersonalPage> search(String[] searchArray) throws ClassNotFoundException {
-        MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
-        HashSet<PersonalPage> allPersonalPage = new HashSet<>();
-        BasicDBList or = new BasicDBList();
-        for (String s : searchArray) {
-            or.add(new BasicDBObject("json.pageName", s));
-            or.add(new BasicDBObject("json.team", s));
-            or.add(new BasicDBObject("json.teamFootballerMembers", s));
-            or.add(new BasicDBObject("json.coachName", s));
-            or.add(new BasicDBObject("json.teamFields", s));
-            BasicDBObject query = new BasicDBObject("$or", or);
-            List<Document> into = personalPages.find(query).into(new ArrayList<>());
-            for (Document document : into) {
-                allPersonalPage.add(convertPersonalPageDocument(document));
-            }
+        try {
+            MongoCollection<Document> personalPages = mongoConnection.getPersonalPages();
+            HashSet<PersonalPage> allPersonalPage = new HashSet<>();
+            BasicDBList or = new BasicDBList();
+            for (String s : searchArray) {
+                or.add(new BasicDBObject("json.pageName", s));
+                or.add(new BasicDBObject("json.team", s));
+                or.add(new BasicDBObject("json.teamFootballerMembers", s));
+                or.add(new BasicDBObject("json.coachName", s));
+                or.add(new BasicDBObject("json.teamFields", s));
+                BasicDBObject query = new BasicDBObject("$or", or);
+                List<Document> into = personalPages.find(query).into(new ArrayList<>());
+                for (Document document : into) {
+                    allPersonalPage.add(convertPersonalPageDocument(document));
+                }
 
+            }
+            return allPersonalPage;
+        } catch (Exception e) {
+            //TODO what we should return\
+            return null;
         }
-        return allPersonalPage;
+
     }
 }

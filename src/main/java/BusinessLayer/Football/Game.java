@@ -9,6 +9,7 @@ import DB.SeasonDao;
 import DB.TeamDao;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -19,7 +20,7 @@ public class Game {
     private String homeTeam;
     private String awayTeam;
     private long gameDate;
-    private EventLog eventLog;
+    private HashSet<String> events;
     private String mainRefereeID;
     private String secondaryReferee1ID;
     private String secondaryReferee2ID;
@@ -37,7 +38,7 @@ public class Game {
         this.season = season.get_id();
         this.homeTeam = homeTeam.get_id();
         this.awayTeam = awayTeam.get_id();
-        this.eventLog = new EventLog(this);
+        this.events = new HashSet<>();
         for (Field f :homeTeam.getFields() ) {
             if(f.getFieldType() == FieldType.Tournament){
                 this.field=f.get_id();
@@ -165,10 +166,6 @@ public class Game {
         return gameDate;
     }
 
-    public EventLog getEventLog() {
-        return eventLog;
-    }
-
     public List<String > getFansObserverID() {
         return fansObserverID;
     }
@@ -199,6 +196,15 @@ public class Game {
 
     public void set_id(String _id) {
         this._id = _id;
+    }
+
+    public boolean addEvent(String eventID){
+        events.add(eventID);
+        return true;
+    }
+
+    public HashSet<String> getEvents() {
+        return events;
     }
 }
 

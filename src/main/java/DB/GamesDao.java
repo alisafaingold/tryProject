@@ -1,5 +1,6 @@
 package DB;
 
+import BusinessLayer.Football.Event;
 import BusinessLayer.Football.Game;
 import BusinessLayer.Users.Fan;
 import com.google.gson.Gson;
@@ -30,19 +31,18 @@ public class GamesDao<T> implements Dao<Game> {
         try {
             mongoConnection = MongoConnection.getInstance();
             gson = new Gson();
-            settings =  JsonWriterSettings.builder()
+            settings = JsonWriterSettings.builder()
                     .int64Converter((value, writer) -> writer.writeNumber(value.toString()))
                     .objectIdConverter((value, writer) -> writer.writeString(value.toString()))
                     .build();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("constructor eror!!!");
         }
     }
 
     public static GamesDao getInstance() {
         if (instance == null) {
-            synchronized(GamesDao.class) {
+            synchronized (GamesDao.class) {
                 if (instance == null) {
                     instance = new GamesDao();
                 }
@@ -66,7 +66,8 @@ public class GamesDao<T> implements Dao<Game> {
         } catch (Exception e) {
             //TODO what we should return
             return Optional.empty();
-        }    }
+        }
+    }
 
     @Override
     public List<Game> getAll() {
@@ -134,8 +135,7 @@ public class GamesDao<T> implements Dao<Game> {
                 }
             }
             return allGames;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             //TODO what we should return
             return null;
         }
@@ -166,7 +166,7 @@ public class GamesDao<T> implements Dao<Game> {
         try {
             MongoCollection<Document> games = mongoConnection.getGames();
             ArrayList<Game> allGames = new ArrayList<>();
-            BasicDBObject query =new BasicDBObject ("mainReferee",new ObjectId(refereeID));
+            BasicDBObject query = new BasicDBObject("mainReferee", new ObjectId(refereeID));
             List<Document> into = games.find(query).into(new ArrayList<>());
             for (Document document : into) {
                 allGames.add(convertGameDocument(document));
@@ -177,7 +177,6 @@ public class GamesDao<T> implements Dao<Game> {
             return null;
         }
     }
-
 
 
     public List<Game> getFieldGames(String fieldID) {
@@ -197,21 +196,35 @@ public class GamesDao<T> implements Dao<Game> {
     }
 
     // For Fan Controller
-    public Game checkObserver (Fan fan, Game game){
-        try{
+    public Game checkObserver(Fan fan, Game game) {
+        try {
             MongoCollection<Document> games = mongoConnection.getGames();
             BasicDBList and = new BasicDBList();
             and.add(new BasicDBObject("_id", new ObjectId(game.get_id())));
             and.add(new BasicDBObject("fansObserver", new ObjectId(fan.get_id())));
             BasicDBObject query = new BasicDBObject("$and", and);
             ArrayList<Document> DBPersonalPages = games.find(query).into(new ArrayList<>());
-            if(!DBPersonalPages.isEmpty()){
+            if (!DBPersonalPages.isEmpty()) {
                 return convertGameDocument(DBPersonalPages.get(0));
-            }
-            else{
+            } else {
                 return null;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Game getGameByEvent(Event event) {
+        try {
+            MongoCollection<Document> games = mongoConnection.getGames();
+            BasicDBObject query = new BasicDBObject("eventLog", new ObjectId((event.get_id())));
+            ArrayList<Document> dbGames = games.find(query).into(new ArrayList<>());
+            if (dbGames.isEmpty())
+                return null;
+            else {
+                return convertGameDocument(dbGames.get(0));
+            }
+        } catch (Exception e) {
             return null;
         }
     }
